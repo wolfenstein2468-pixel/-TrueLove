@@ -1,5 +1,5 @@
 import './styles.css';
-import { VaultModule } from './modules/vault.ts';
+import { VaultModule } from './modules/vault';
 import data from './data.json';
 
 // Забираем секретный код из json
