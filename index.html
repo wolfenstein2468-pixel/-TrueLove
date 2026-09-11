@@ -7,6 +7,31 @@
   </head>
   <body>
     <div id="app"></div>
+    <!-- Контейнер приложения -->
+<div id="app"></div>
+
+<!-- Канвас для анимации сердечек (поверх всего) -->
+<canvas id="fxCanvas" style="position: fixed; inset: 0; pointer-events: none; z-index: 3;"></canvas>
+
+<!-- Видео-сюрприз (скрыто до клика по конверту) -->
+<video id="myVideo" src="./path-to-your-video.mp4" style="position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2; display: none;"></video>
+
+<!-- Экран с письмом и конвертом -->
+<div id="modalOverlay" class="intro-overlay hidden">
+  <div class="spa-card" id="envelopeCard">
+    <div class="stickers-layer">💌</div>
+    <div class="spa-title">Особенное послание для тебя</div>
+    <div class="spa-text">Нажми на конверт, чтобы открыть</div>
+    
+    <div class="envelope-wrapper">
+      <div class="envelope-flap"></div>
+      <div class="envelope-seal">❤️</div>
+    </div>
+  </div>
+</div>
+
+<div id="fadeScreen" style="position: fixed; inset: 0; background: black; opacity: 0; pointer-events: none; transition: opacity 1s ease; z-index: 5;"></div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
