@@ -1,4 +1,4 @@
-import { SecretCode } from '../types';
+  import { SecretCode } from '../types';
 
 export class VaultModule {
   private currentDials: number[] = [0, 0, 0, 0];
@@ -8,8 +8,8 @@ export class VaultModule {
   constructor(secretCode: SecretCode, onUnlocked: () => void) {
     this.secretCode = secretCode;
     this.onUnlocked = onUnlocked;
-    this.render(); // Сначала рисуем разметку
-    this.initListeners(); // Потом вешаем клики
+    this.render();
+    this.initListeners();
   }
 
   private render(): void {
@@ -62,7 +62,7 @@ export class VaultModule {
   }
 
   private initListeners(): void {
-    document.querySelectorAll('.dial-column-column').forEach((column, index) => {
+    document.querySelectorAll('.dial-column').forEach((column, index) => {
       const btnUp = column.querySelector('.dial-btn:nth-child(1)');
       const btnDown = column.querySelector('.dial-btn:nth-child(3)');
 
