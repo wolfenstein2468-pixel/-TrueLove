@@ -1,13 +1,21 @@
 import './styles.css';
 import { VaultModule } from './modules/vault';
+import { IntroModule } from './modules/intro';
 import data from './data.json';
 
-// Забираем секретный код из json
 const secretCode = data.vault.secretCode as [number, number, number, number];
 
+// Запускаем сейф
 new VaultModule(secretCode, () => {
+  // Когда сейф разгадан: убираем сейф и показываем конверт
   const app = document.getElementById('app');
-  if (app) {
-    app.innerHTML = `<div style="text-align: center; font-size: 1.5rem; margin-top: 40vh; color: #3fb950;">Сейф успешно открыт! Переход к следующей сцене...</div>`;
-  }
+  if (app) app.innerHTML = '';
+
+  document.getElementById('modalOverlay')?.classList.remove('hidden');
+  
+  // Запускаем логику конверта, частиц и видео
+  new IntroModule(() => {
+    console.log('Видео завершено!');
+  });
 });
+
