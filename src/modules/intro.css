@@ -1,3 +1,22 @@
+/* Временный фон и размытие для сцены сейфа и конверта */
+body.intro-stage {
+  background-image: url('./path-to-preview.jpg'); /* Твой размытый стоп-кадр */
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+body.intro-stage::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 5, 8, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1;
+  pointer-events: none;
+}
+
 .intro-overlay {
   position: absolute; 
   inset: 0; 
