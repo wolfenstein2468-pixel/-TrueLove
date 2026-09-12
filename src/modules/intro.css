@@ -17,11 +17,16 @@ body.intro-stage::before {
   pointer-events: none;
 }
 
-/* Контейнер приложения со сейфом — четкий, поверх размытия */
+/* Принудительный сброс любых эффектов и изоляция слоя для сейфа */
 #app {
   position: relative;
-  z-index: 2; /* Выше размытия, поэтому цифры будут резкими */
+  z-index: 999; /* Задираем слой выше некуда */
+  isolation: isolate; /* Изолируем контекст наложения */
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
+
 
 .intro-overlay {
   position: absolute; 
