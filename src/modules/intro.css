@@ -3,7 +3,7 @@ body.intro-stage {
   background-image: url('/big.jpg');
   background-size: cover;
   background-position: center;
-  position: rela
+  position: relation;
 }
 /* Фиксированный слой с размытием (лежит строго под всем контентом) */
 body.intro-stage::before {
