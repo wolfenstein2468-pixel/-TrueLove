@@ -1,6 +1,6 @@
 /* Временный фон и размытие для сцены сейфа и конверта */
 body.intro-stage {
-  background-image: url('pin.jpg'); /* Твой размытый стоп-кадр */
+  background-image: url('../../pin.jpg'); /* Твой размытый стоп-кадр */
   background-size: cover;
   background-position: center;
   position: relative;
