@@ -1,20 +1,26 @@
-/* Временный фон и размытие для сцены сейфа и конверта */
+/* Временный фон для сцены */
 body.intro-stage {
-  background-image: url('../../pin.jpg'); /* Твой размытый стоп-кадр */
+  background-image: url('/big.jpg');
   background-size: cover;
   background-position: center;
-  position: relative;
-}
+  position: rela
 
+/* Фиксированный слой с размытием (лежит строго под всем контентом) */
 body.intro-stage::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: rgba(5, 5, 8, 0.5);
+  background: rgba(5, 5, 8, 0.4);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  z-index: 1;
+  z-index: 1; /* Самый нижний слой */
   pointer-events: none;
+}
+
+/* Контейнер приложения со сейфом — четкий, поверх размытия */
+#app {
+  position: relative;
+  z-index: 2; /* Выше размытия, поэтому цифры будут резкими */
 }
 
 .intro-overlay {
