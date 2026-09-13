@@ -26,8 +26,6 @@ body.intro-stage::before {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
-
-
 .intro-overlay {
   position: absolute; 
   inset: 0; 
@@ -35,10 +33,10 @@ body.intro-stage::before {
   display: flex; 
   justify-content: center; 
   align-items: center;
-  background: radial-gradient(circle at center, rgba(5,5,8,0.3) 0%, rgba(5,5,8,0.85) 100%),
-              linear-gradient(to bottom, rgba(5,5,8,0.5), rgba(5,5,8,0.95));
+  background: rgba(5, 5, 8, 0.3); /* Оставляем легкое полупрозрачное затемнение, чтобы фон был виден */
   transition: opacity 0.8s ease, visibility 0.8s;
 }
+
 
 .intro-overlay.hidden { 
   opacity: 0; 
