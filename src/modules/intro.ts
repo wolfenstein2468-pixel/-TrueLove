@@ -1,23 +1,53 @@
 import './intro.css';
+
 export class IntroModule {
   private onFinished: () => void;
   private isOpened: boolean = false;
   private particles: any[] = [];
   private ambientHearts: any[] = [];
   
-  private gradientPairs = [
-    ['#ff4d6d', '#ff758f'],
-    ['#ff0054', '#ff5400'],
-    ['#7000ff', '#ff007f'],
-    ['#ffb3c1', '#ffffff'],
-    ['#ff85a1', '#fbb1bd'],
-    ['#ff0077', '#ffb703'],
-    ['#e0aaff', '#ff9e00']
+  // Массив путей к твоим картинкам-сердечкам (положи файлы в папку public)
+  private heartImages: HTMLImageElement[] = [];
+  private imageSources = [
+    '/heart1.png',
+    '/heart2.png',
+    '/heart3.png'
+    // Добавь сюда столько путей, сколько нужно
   ];
 
   constructor(onFinished: () => void) {
     this.onFinished = onFinished;
-    this.init();
+    this.preloadImages(() => {
+      this.init();
+    });
+  }
+
+  // Предзагрузка картинок, чтобы они не дергались при появлении
+  private preloadImages(callback: () => void) {
+    let loadedCount = 0;
+    if (this.imageSources.length === 0) {
+      callback();
+      return;
+    }
+
+    this.imageSources.forEach(src => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        this.heartImages.push(img);
+        loadedCount++;
+        if (loadedCount === this.imageSources.length) {
+          callback();
+        }
+      };
+      img.onerror = () => {
+        // Если какая-то картинка не нашлась, всё равно продолжаем
+        loadedCount++;
+        if (loadedCount === this.imageSources.length) {
+          callback();
+        }
+      };
+    });
   }
 
   private init(): void {
@@ -34,44 +64,30 @@ export class IntroModule {
       height = canvas.height = window.innerHeight;
     });
 
-    const drawGradientHeart = (c: CanvasRenderingContext2D, x: number, y: number, size: number, colors: string[], alpha: number, angle = 0) => {
+    // Отрисовка случайной картинки сердца вместо векторной графики
+    const drawHeartImage = (c: CanvasRenderingContext2D, img: HTMLImageElement, x: number, y: number, size: number, alpha: number, angle = 0) => {
+      if (!img) return;
       c.save();
       c.translate(x, y);
       c.rotate(angle);
       c.globalAlpha = alpha;
-
-      const grad = c.createLinearGradient(-size / 2, -size / 2, size / 2, size / 2);
-      grad.addColorStop(0, colors[0]);
-      grad.addColorStop(1, colors[1]);
-      c.fillStyle = grad;
-
-      c.beginPath();
-      const topCurveHeight = size * 0.3;
-      c.moveTo(0, topCurveHeight);
-      c.bezierCurveTo(0, 0, -size / 2, 0, -size / 2, topCurveHeight);
-      c.bezierCurveTo(-size / 2, (size + topCurveHeight) / 2, 0, size, 0, size);
-      c.bezierCurveTo(0, size, size / 2, (size + topCurveHeight) / 2, size / 2, topCurveHeight);
-      c.bezierCurveTo(size / 2, 0, 0, 0, 0, topCurveHeight);
-      c.closePath();
-      
-      c.shadowColor = colors[0];
-      c.shadowBlur = size * 0.3;
-      c.fill();
+      c.drawImage(img, -size / 2, -size / 2, size, size);
       c.restore();
     };
 
     const createBurst = (x: number, y: number) => {
-      for (let i = 0; i < 60; i++) {
+      if (this.heartImages.length === 0) return;
+      for (let i = 0; i < 40; i++) {
         const angle = Math.random() * Math.PI * 2;
         const speed = Math.random() * 10 + 4;
-        const randomColors = this.gradientPairs[Math.floor(Math.random() * this.gradientPairs.length)];
+        const randomImg = this.heartImages[Math.floor(Math.random() * this.heartImages.length)];
         
         this.particles.push({
           x, y,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed - 3,
-          size: Math.random() * 28 + 16,
-          colors: randomColors,
+          size: Math.random() * 24 + 16,
+          img: randomImg,
           alpha: 1,
           rot: Math.random() * Math.PI,
           vRot: (Math.random() - 0.5) * 0.12
@@ -80,15 +96,16 @@ export class IntroModule {
     };
 
     const spawnAmbientHeart = () => {
-      if (!this.isOpened) return;
-      const randomColors = this.gradientPairs[Math.floor(Math.random() * this.gradientPairs.length)];
+      if (!this.isOpened || this.heartImages.length === 0) return;
+      const randomImg = this.heartImages[Math.floor(Math.random() * this.heartImages.length)];
+      
       this.ambientHearts.push({
         x: Math.random() * width,
         y: height + 40,
         vy: -(Math.random() * 2 + 1),
         vx: Math.sin(Math.random() * Math.PI) * 0.8,
-        size: Math.random() * 25 + 14,
-        colors: randomColors,
+        size: Math.random() * 22 + 12,
+        img: randomImg,
         alpha: Math.random() * 0.6 + 0.4,
         rot: Math.random() * Math.PI,
         vRot: (Math.random() - 0.5) * 0.05
@@ -106,7 +123,7 @@ export class IntroModule {
         p.alpha -= 0.012;
         p.rot += p.vRot;
 
-        drawGradientHeart(ctx, p.x, p.y, p.size, p.colors, Math.max(0, p.alpha), p.rot);
+        drawHeartImage(ctx, p.img, p.x, p.y, p.size, Math.max(0, p.alpha), p.rot);
         if (p.alpha <= 0) this.particles.splice(i, 1);
       }
 
@@ -116,7 +133,7 @@ export class IntroModule {
         h.x += Math.sin(h.y * 0.015) * 0.8;
         h.rot += h.vRot;
 
-        drawGradientHeart(ctx, h.x, h.y, h.size, h.colors, h.alpha, h.rot);
+        drawHeartImage(ctx, h.img, h.x, h.y, h.size, h.alpha, h.rot);
         if (h.y < -50) this.ambientHearts.splice(i, 1);
       }
 
@@ -130,6 +147,13 @@ export class IntroModule {
     const modalOverlay = document.getElementById('modalOverlay');
     const video = document.getElementById('myVideo') as HTMLVideoElement;
     const fadeScreen = document.getElementById('fadeScreen');
+
+    // Установка рандомного сердечка на саму печать конверта при инициализации
+    const envelopeSeal = envelopeCard?.querySelector('.envelope-seal');
+    if (envelopeSeal && this.heartImages.length > 0) {
+      const randomSealImg = this.heartImages[Math.floor(Math.random() * this.heartImages.length)];
+      envelopeSeal.innerHTML = `<img src="${randomSealImg.src}" style="width: 28px; height: 28px; object-fit: contain;" alt="seal" />`;
+    }
 
     envelopeCard?.addEventListener('click', () => {
       if (this.isOpened) return;
