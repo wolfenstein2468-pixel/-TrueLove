@@ -1,6 +1,6 @@
 /* Временный фон для сцены */
 body.intro-stage {
-  background-image: url('/big.jpg');
+  background-image: url('/pin.jpg');
   background-size: cover;
   background-position: center;
   position: relative;
