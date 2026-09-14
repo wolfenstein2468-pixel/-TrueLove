@@ -27,6 +27,24 @@ new VaultModule(secretCode, () => {
     console.log('Видео завершено, переходим к следующему экрану (например, квизу)!');
     // Здесь запускай модуль следующего экрана (квиза)
   });
+  // Внутри IntroModule при окончании видео или по таймеру:
+const fadeScreen = document.getElementById('fadeScreen');
+
+if (fadeScreen) {
+  // Плавное затемнение (переход завязан на transition: opacity 1s ease из твоей разметки)
+  fadeScreen.style.opacity = '1';
+
+  setTimeout(() => {
+    // Вызываем callback окончания интро (переход к квизу)
+    this.onComplete();
+
+    // Возвращаем экрану прозрачность, когда квиз уже отрендерился под черным фоном
+    setTimeout(() => {
+      fadeScreen.style.opacity = '0';
+    }, 100);
+  }, 1000); // Время должно совпадать с transition (1 секунда)
+}
+
 });
 
 
