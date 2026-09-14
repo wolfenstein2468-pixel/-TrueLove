@@ -1,6 +1,9 @@
 import './styles.css';
 import { VaultModule } from './modules/vault';
 import { IntroModule } from './modules/intro';
+import { FlowModule } from './modules/flow';
+import { FlowStep } from './types';
+import './modules/flow.css'; // Подключаем стили квиза
 import data from './data.json';
 
 const secretCode = data.vault.secretCode as [number, number, number, number];
