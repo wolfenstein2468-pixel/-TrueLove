@@ -3,13 +3,12 @@ import 'plyr/dist/plyr.css';
 import { FlowStep } from '../types';
 
 export class FlowModule {
-  private container: HTMLElement;
+  private container: HTMLElement; // Убрали лишнюю цифру 6
   private steps: FlowStep[];
   private onFinished: () => void;
   
   private currentIndex: number = 0;
   private isAnswered: boolean = false;
-  private pendingNextStep: boolean = false;
   private player: Plyr | null = null;
 
   constructor(container: HTMLElement, steps: FlowStep[], onFinished: () => void) {
@@ -103,13 +102,14 @@ export class FlowModule {
       }
 
       const qText = document.getElementById('qText');
-      if (qText) qText.innerText = step.question;
+      if (qText && step.question) qText.innerText = step.question;
 
       for (let i = 0; i < 4; i++) {
         const btn = document.getElementById(`opt-${i}`);
-        if (btn && step.answers[i]) {
+        if (btn && step.answers && step.answers[i]) {
           btn.innerText = step.answers[i].text;
           btn.className = 'valentine-option';
+          (btn as HTMLButtonElement).style.pointerEvents = 'auto';
         }
       }
       this.isAnswered = false;
@@ -118,7 +118,7 @@ export class FlowModule {
       if (quizBox) quizBox.style.display = 'none';
       if (videoBox) videoBox.classList.add('active');
 
-      if (this.player) {
+      if (this.player && step.url) {
         this.player.source = {
           type: 'video',
           sources: [{ src: step.url, type: 'video/mp4' }]
@@ -139,34 +139,50 @@ export class FlowModule {
     const isCorrect = selectedIndex === step.correctIndex;
     const selectedBtn = document.getElementById(`opt-${selectedIndex}`);
 
-    selectedBtn?.classList.add(isCorrect ? 'correct' : 'wrong');
-    document.querySelectorAll('.valentine-option').forEach(btn => btn.classList.add('disabled'));
+    // Подсветка кнопок
+    if (selectedBtn) {
+      selectedBtn.classList.add(isCorrect ? 'correct' : 'wrong');
+    }
 
+    // Если есть правильный ответ, подсветим и его тоже
+    if (step.correctIndex !== undefined) {
+      const correctBtn = document.getElementById(`opt-${step.correctIndex}`);
+      if (correctBtn && !isCorrect) {
+        correctBtn.classList.add('correct');
+      }
+    }
+
+    // Отключаем клики на время показа модалки
+    for (let i = 0; i < 4; i++) {
+      const btn = document.getElementById(`opt-${i}`);
+      if (btn) (btn as HTMLButtonElement).style.pointerEvents = 'none';
+    }
+
+    // Показываем мем-карточку
+    setTimeout(() => {
+      this.showMeme(ans);
+    }, 600);
+  }
+
+  private showMeme(ans: any): void {
+    const memeModal = document.getElementById('memeModal');
     const memeImg = document.getElementById('memeImg') as HTMLImageElement;
     const memeTitle = document.getElementById('memeTitle');
     const memeDesc = document.getElementById('memeDesc');
-    const memeModal = document.getElementById('memeModal');
 
-    if (memeImg) memeImg.src = ans.memeImg;
-    if (memeTitle) memeTitle.innerText = ans.memeTitle;
-    if (memeDesc) memeDesc.innerText = ans.memeDesc;
-    memeModal?.classList.add('active');
+    if (memeImg) memeImg.src = ans.memeImg || '';
+    if (memeTitle) memeTitle.innerText = ans.memeTitle || '';
+    if (memeDesc) memeDesc.innerText = ans.memeDesc || '';
 
-    this.pendingNextStep = isCorrect;
+    memeModal?.classList.add('show');
   }
 
-    private closeMeme(): void {
-    document.getElementById('memeModal')?.classList.remove('active');
+  private closeMeme(): void {
+    const memeModal = document.getElementById('memeModal');
+    memeModal?.classList.remove('show');
 
-    if (this.pendingNextStep) {
-      this.currentIndex++;
-      this.renderStep();
-    } else {
-      document.querySelectorAll('.valentine-option').forEach(btn => {
-        btn.classList.remove('disabled', 'wrong', 'correct');
-      });
-      this.isAnswered = false;
-    }
+    this.currentIndex++;
+    this.renderStep();
   }
 
   private onVideoContinue(): void {
@@ -174,3 +190,4 @@ export class FlowModule {
     this.renderStep();
   }
 }
+
