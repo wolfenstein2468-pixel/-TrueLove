@@ -2,5 +2,60 @@
   "vault": {
     "secretCode": [1, 9, 9, 9],
     "title": "Secure Vault"
-  }
+  },
+  "flowSteps": [
+    {
+      "type": "quiz",
+      "question": "С какого момента всё началось? ✨",
+      "questionImage": "assets/images/q1.jpg",
+      "answers": [
+        {
+          "text": "Вариант ответа 1",
+          "memeImg": "assets/memes/meme1.jpg",
+          "memeTitle": "Ахаха, почти!",
+          "memeDesc": "Но нет, давай попробуем еще раз подумать."
+        },
+        {
+          "text": "Правильный вариант",
+          "memeImg": "assets/memes/meme2.jpg",
+          "memeTitle": "Идеально! 🎉",
+          "memeDesc": "Ты помнишь абсолютно всё!"
+        },
+        {
+          "text": "Вариант ответа 3",
+          "memeImg": "assets/memes/meme1.jpg",
+          "memeTitle": "Хмм...",
+          "memeDesc": "Смелое предположение, но мимо."
+        },
+        {
+          "text": "Вариант ответа 4",
+          "memeImg": "assets/memes/meme1.jpg",
+          "memeTitle": "Ой-ой-ой",
+          "memeDesc": "Совсем не то!"
+        }
+      ],
+      "correctIndex": 1
+    },
+    {
+      "type": "video",
+      "url": "assets/videos/step1.mp4"
+    },
+    {
+      "type": "quiz",
+      "question": "Следующий вопрос квиза...",
+      "questionImage": "",
+      "answers": [
+        { "text": "Ответ А", "memeImg": "", "memeTitle": "", "memeDesc": "" },
+        { "text": "Ответ Б", "memeImg": "", "memeTitle": "", "memeDesc": "" },
+        { "text": "Ответ В", "memeImg": "", "memeTitle": "", "memeDesc": "" },
+        { "text": "Ответ Г", "memeImg": "", "memeTitle": "", "memeDesc": "" }
+      ],
+      "correctIndex": 0
+    },
+    {
+      "type": "video",
+      "url": "assets/videos/culmination.mp4"
+    }
+  ]
 }
+
