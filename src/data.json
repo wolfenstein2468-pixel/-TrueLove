@@ -38,24 +38,7 @@
     },
     {
       "type": "video",
-      "url": "assets/videos/step1.mp4"
-    },
-    {
-      "type": "quiz",
-      "question": "Следующий вопрос квиза...",
-      "questionImage": "",
-      "answers": [
-        { "text": "Ответ А", "memeImg": "", "memeTitle": "", "memeDesc": "" },
-        { "text": "Ответ Б", "memeImg": "", "memeTitle": "", "memeDesc": "" },
-        { "text": "Ответ В", "memeImg": "", "memeTitle": "", "memeDesc": "" },
-        { "text": "Ответ Г", "memeImg": "", "memeTitle": "", "memeDesc": "" }
-      ],
-      "correctIndex": 0
-    },
-    {
-      "type": "video",
       "url": "assets/videos/culmination.mp4"
     }
   ]
 }
-
