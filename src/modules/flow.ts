@@ -1,15 +1,15 @@
-import Plyr from 'plyr';
+import * as Plyr from 'plyr';
 import 'plyr/dist/plyr.css';
 import { FlowStep } from '../types';
 
 export class FlowModule {
-  private container: HTMLElement; // Убрали лишнюю цифру 6
+  private container: HTMLElement;
   private steps: FlowStep[];
   private onFinished: () => void;
   
   private currentIndex: number = 0;
   private isAnswered: boolean = false;
-  private player: Plyr | null = null;
+  private player: any = null;
 
   constructor(container: HTMLElement, steps: FlowStep[], onFinished: () => void) {
     this.container = container;
@@ -63,7 +63,8 @@ export class FlowModule {
   private initPlayer(): void {
     const videoEl = document.getElementById('flowPlayer') as HTMLVideoElement;
     if (videoEl) {
-      this.player = new Plyr(videoEl, {
+      const PlyrConstructor = (Plyr as any).default || Plyr;
+      this.player = new PlyrConstructor(videoEl, {
         controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume'],
         loop: { active: false }
       });
@@ -139,12 +140,10 @@ export class FlowModule {
     const isCorrect = selectedIndex === step.correctIndex;
     const selectedBtn = document.getElementById(`opt-${selectedIndex}`);
 
-    // Подсветка кнопок
     if (selectedBtn) {
       selectedBtn.classList.add(isCorrect ? 'correct' : 'wrong');
     }
 
-    // Если есть правильный ответ, подсветим и его тоже
     if (step.correctIndex !== undefined) {
       const correctBtn = document.getElementById(`opt-${step.correctIndex}`);
       if (correctBtn && !isCorrect) {
@@ -152,13 +151,11 @@ export class FlowModule {
       }
     }
 
-    // Отключаем клики на время показа модалки
     for (let i = 0; i < 4; i++) {
       const btn = document.getElementById(`opt-${i}`);
       if (btn) (btn as HTMLButtonElement).style.pointerEvents = 'none';
     }
 
-    // Показываем мем-карточку
     setTimeout(() => {
       this.showMeme(ans);
     }, 600);
@@ -190,4 +187,3 @@ export class FlowModule {
     this.renderStep();
   }
 }
-
