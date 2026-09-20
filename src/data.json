@@ -7,38 +7,23 @@
     {
       "type": "quiz",
       "question": "С какого момента всё началось? ✨",
-      "questionImage": "assets/images/q1.jpg",
+      "questionImage": "https://picsum.photos/400/300",
       "answers": [
         {
           "text": "Вариант ответа 1",
-          "memeImg": "assets/memes/meme1.jpg",
+          "memeImg": "https://picsum.photos/300/200",
           "memeTitle": "Ахаха, почти!",
           "memeDesc": "Но нет, давай попробуем еще раз подумать."
         },
         {
           "text": "Правильный вариант",
-          "memeImg": "assets/memes/meme2.jpg",
+          "memeImg": "https://picsum.photos/300/200",
           "memeTitle": "Идеально! 🎉",
           "memeDesc": "Ты помнишь абсолютно всё!"
-        },
-        {
-          "text": "Вариант ответа 3",
-          "memeImg": "assets/memes/meme1.jpg",
-          "memeTitle": "Хмм...",
-          "memeDesc": "Смелое предположение, но мимо."
-        },
-        {
-          "text": "Вариант ответа 4",
-          "memeImg": "assets/memes/meme1.jpg",
-          "memeTitle": "Ой-ой-ой",
-          "memeDesc": "Совсем не то!"
         }
       ],
       "correctIndex": 1
-    },
-    {
-      "type": "video",
-      "url": "assets/videos/culmination.mp4"
+    
     }
   ]
 }
