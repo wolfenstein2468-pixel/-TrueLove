@@ -38,7 +38,7 @@ export class FlowModule {
         </div>
 
         <div id="videoContainer" class="video-wrapper">
-          <video id="flowPlayer" playsinline controls crossorigin></video>
+          <video id="flowPlayer" playsinline webkit-playsinline controls crossorigin></video>
           <button id="continueBtn" class="continue-btn-overlay">Продолжить ✨</button>
         </div>
 
@@ -61,14 +61,9 @@ export class FlowModule {
     document.getElementById('memeModal')?.addEventListener('click', () => this.closeMeme());
   }
 
-    private initPlayer(): void {
+  private initPlayer(): void {
     const videoEl = document.getElementById('flowPlayer') as HTMLVideoElement;
     if (videoEl) {
-      // Добавляем атрибуты для корректной работы на мобилках
-      videoEl.setAttribute('playsinline', '');
-      videoEl.setAttribute('webkit-playsinline', '');
-      videoEl.muted = false; // Убедимся, что звук не заблокирован безразмерным автоплей-полисом
-
       const PlyrConstructor = (Plyr as any).default || Plyr;
       this.player = new PlyrConstructor(videoEl, {
         controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume'],
@@ -76,16 +71,11 @@ export class FlowModule {
         clickToPlay: true
       });
 
-      this.player.on('ready', () => {
-        console.log('Player is ready');
-      });
-
-      this.player.once('ended', () => {
+      this.player.on('ended', () => {
         document.getElementById('continueBtn')?.classList.add('show');
       });
     }
   }
-
 
   private renderStep(): void {
     const step = this.steps[this.currentIndex];
@@ -126,23 +116,31 @@ export class FlowModule {
         }
       }
       this.isAnswered = false;
+
     } else if (step.type === 'video') {
       if (quizBox) quizBox.style.display = 'none';
       if (videoBox) videoBox.classList.add('active');
 
       if (this.player && step.url) {
+        // Меняем источник через метод Plyr, чтобы плеер корректно перестроился
         this.player.source = {
           type: 'video',
-          sources: [{ src: step.url, type: 'video/mp4' }]
+          sources: [
+            {
+              src: step.url,
+              type: 'video/mp4',
+            },
+          ],
         };
-        // Принудительно вызываем загрузку для мобилок
+
+        // Небольшая задержка для мобильных браузеров перед автопроигрыванием
         setTimeout(() => {
-          this.player.play();
-        }, 300);
+          this.player.play().catch(() => {
+            console.log("Autoplay restricted, waiting for user tap.");
+          });
+        }, 200);
       }
     }
-
-    
   }
 
   private handleAnswer(selectedIndex: number): void {
@@ -198,7 +196,6 @@ export class FlowModule {
       this.currentIndex++;
       this.renderStep();
     } else {
-      // Сбрасываем цвета и блокировку со ВСЕХ кнопок для повторной попытки
       this.isAnswered = false;
       for (let i = 0; i < 4; i++) {
         const btn = document.getElementById(`opt-${i}`);
@@ -211,6 +208,9 @@ export class FlowModule {
   }
 
   private onVideoContinue(): void {
+    if (this.player) {
+      this.player.pause();
+    }
     this.currentIndex++;
     this.renderStep();
   }
