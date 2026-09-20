@@ -61,13 +61,23 @@ export class FlowModule {
     document.getElementById('memeModal')?.addEventListener('click', () => this.closeMeme());
   }
 
-  private initPlayer(): void {
+    private initPlayer(): void {
     const videoEl = document.getElementById('flowPlayer') as HTMLVideoElement;
     if (videoEl) {
+      // Добавляем атрибуты для корректной работы на мобилках
+      videoEl.setAttribute('playsinline', '');
+      videoEl.setAttribute('webkit-playsinline', '');
+      videoEl.muted = false; // Убедимся, что звук не заблокирован безразмерным автоплей-полисом
+
       const PlyrConstructor = (Plyr as any).default || Plyr;
       this.player = new PlyrConstructor(videoEl, {
         controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume'],
-        loop: { active: false }
+        loop: { active: false },
+        clickToPlay: true
+      });
+
+      this.player.on('ready', () => {
+        console.log('Player is ready');
       });
 
       this.player.once('ended', () => {
@@ -75,6 +85,7 @@ export class FlowModule {
       });
     }
   }
+
 
   private renderStep(): void {
     const step = this.steps[this.currentIndex];
@@ -115,7 +126,6 @@ export class FlowModule {
         }
       }
       this.isAnswered = false;
-
     } else if (step.type === 'video') {
       if (quizBox) quizBox.style.display = 'none';
       if (videoBox) videoBox.classList.add('active');
@@ -125,9 +135,14 @@ export class FlowModule {
           type: 'video',
           sources: [{ src: step.url, type: 'video/mp4' }]
         };
-        this.player.play();
+        // Принудительно вызываем загрузку для мобилок
+        setTimeout(() => {
+          this.player.play();
+        }, 300);
       }
     }
+
+    
   }
 
   private handleAnswer(selectedIndex: number): void {
