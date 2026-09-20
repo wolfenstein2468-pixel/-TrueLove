@@ -145,6 +145,13 @@ export class FlowModule {
       selectedBtn.classList.add(this.lastAnswerWasCorrect ? 'correct' : 'wrong');
     }
 
+    if (step.correctIndex !== undefined) {
+      const correctBtn = document.getElementById(`opt-${step.correctIndex}`);
+      if (correctBtn && !this.lastAnswerWasCorrect) {
+        correctBtn.classList.add('correct');
+      }
+    }
+
     for (let i = 0; i < 4; i++) {
       const btn = document.getElementById(`opt-${i}`);
       if (btn) (btn as HTMLButtonElement).style.pointerEvents = 'none';
@@ -152,7 +159,7 @@ export class FlowModule {
 
     setTimeout(() => {
       this.showMeme(ans);
-    }, 600);
+    }, 400);
   }
 
   private showMeme(ans: any): void {
@@ -173,11 +180,10 @@ export class FlowModule {
     memeModal?.classList.remove('show');
 
     if (this.lastAnswerWasCorrect) {
-      // Если ответил правильно — переходим к следующему шагу
       this.currentIndex++;
       this.renderStep();
     } else {
-      // Если ошибся — закрываем мем и даем возможность выбрать другой вариант
+      // Сбрасываем цвета и блокировку со ВСЕХ кнопок для повторной попытки
       this.isAnswered = false;
       for (let i = 0; i < 4; i++) {
         const btn = document.getElementById(`opt-${i}`);
