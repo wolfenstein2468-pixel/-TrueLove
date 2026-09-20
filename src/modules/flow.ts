@@ -9,6 +9,7 @@ export class FlowModule {
   
   private currentIndex: number = 0;
   private isAnswered: boolean = false;
+  private lastAnswerWasCorrect: boolean = false;
   private player: any = null;
 
   constructor(container: HTMLElement, steps: FlowStep[], onFinished: () => void) {
@@ -137,18 +138,11 @@ export class FlowModule {
     if (!step || step.type !== 'quiz') return;
 
     const ans = step.answers[selectedIndex];
-    const isCorrect = selectedIndex === step.correctIndex;
+    this.lastAnswerWasCorrect = selectedIndex === step.correctIndex;
     const selectedBtn = document.getElementById(`opt-${selectedIndex}`);
 
     if (selectedBtn) {
-      selectedBtn.classList.add(isCorrect ? 'correct' : 'wrong');
-    }
-
-    if (step.correctIndex !== undefined) {
-      const correctBtn = document.getElementById(`opt-${step.correctIndex}`);
-      if (correctBtn && !isCorrect) {
-        correctBtn.classList.add('correct');
-      }
+      selectedBtn.classList.add(this.lastAnswerWasCorrect ? 'correct' : 'wrong');
     }
 
     for (let i = 0; i < 4; i++) {
@@ -178,8 +172,21 @@ export class FlowModule {
     const memeModal = document.getElementById('memeModal');
     memeModal?.classList.remove('show');
 
-    this.currentIndex++;
-    this.renderStep();
+    if (this.lastAnswerWasCorrect) {
+      // Если ответил правильно — переходим к следующему шагу
+      this.currentIndex++;
+      this.renderStep();
+    } else {
+      // Если ошибся — закрываем мем и даем возможность выбрать другой вариант
+      this.isAnswered = false;
+      for (let i = 0; i < 4; i++) {
+        const btn = document.getElementById(`opt-${i}`);
+        if (btn) {
+          btn.className = 'valentine-option';
+          (btn as HTMLButtonElement).style.pointerEvents = 'auto';
+        }
+      }
+    }
   }
 
   private onVideoContinue(): void {
