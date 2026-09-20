@@ -20,10 +20,25 @@
           "memeImg": "https://picsum.photos/300/200",
           "memeTitle": "Идеально! 🎉",
           "memeDesc": "Ты помнишь абсолютно всё!"
+        },
+        {
+          "text": "Вариант ответа 3",
+          "memeImg": "https://picsum.photos/300/200",
+          "memeTitle": "Хмм...",
+          "memeDesc": "Смелое предположение, но мимо."
+        },
+        {
+          "text": "Вариант ответа 4",
+          "memeImg": "https://picsum.photos/300/200",
+          "memeTitle": "Ой-ой-ой",
+          "memeDesc": "Совсем не то!"
         }
       ],
       "correctIndex": 1
-    
+    },
+    {
+      "type": "video",
+      "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
     }
   ]
 }
