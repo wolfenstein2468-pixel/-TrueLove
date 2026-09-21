@@ -1,7 +1,10 @@
 import * as Plyr from 'plyr';
 import 'plyr/dist/plyr.css';
-import Hls from 'hls.js';
 import { FlowStep } from '../types';
+
+// Объявляем глобальный Hls для TypeScript, раз мы подключили его через CDN
+declare const Hls: any;
+
 
 export class FlowModule {
   private container: HTMLElement;
