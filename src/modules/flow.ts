@@ -1,5 +1,6 @@
 import * as Plyr from 'plyr';
 import 'plyr/dist/plyr.css';
+import Hls from 'hls.js';
 import { FlowStep } from '../types';
 
 export class FlowModule {
@@ -11,6 +12,7 @@ export class FlowModule {
   private isAnswered: boolean = false;
   private lastAnswerWasCorrect: boolean = false;
   private player: any = null;
+  private hlsInstance: Hls | null = null;
 
   constructor(container: HTMLElement, steps: FlowStep[], onFinished: () => void) {
     this.container = container;
@@ -94,6 +96,11 @@ export class FlowModule {
       if (videoBox) videoBox.classList.remove('active');
       if (quizBox) quizBox.style.display = 'block';
 
+      // Останавливаем видео при возврате к квизу, если оно играло
+      if (this.player) {
+        this.player.pause();
+      }
+
       const imgEl = document.getElementById('qImg') as HTMLImageElement;
       if (imgEl) {
         if (step.questionImage) {
@@ -121,26 +128,52 @@ export class FlowModule {
       if (quizBox) quizBox.style.display = 'none';
       if (videoBox) videoBox.classList.add('active');
 
-      if (this.player && step.url) {
-        // Меняем источник через метод Plyr, чтобы плеер корректно перестроился
-        this.player.source = {
-          type: 'video',
-          sources: [
-            {
-              src: step.url,
-              type: 'video/mp4',
-            },
-          ],
-        };
+      const videoEl = document.getElementById('flowPlayer') as HTMLVideoElement;
+      if (videoEl && step.url) {
+        // Очищаем предыдущий экземпляр HLS, если он был
+        if (this.hlsInstance) {
+          this.hlsInstance.destroy();
+          this.hlsInstance = null;
+        }
 
-        // Небольшая задержка для мобильных браузеров перед автопроигрыванием
-        setTimeout(() => {
-          this.player.play().catch(() => {
-            console.log("Autoplay restricted, waiting for user tap.");
-          });
-        }, 200);
+        const videoSrc = step.url;
+
+        // Проверяем, является ли источник HLS потоком или обычным MP4
+        if (videoSrc.includes('.m3u8')) {
+          if (Hls.isSupported()) {
+            this.hlsInstance = new Hls();
+            this.hlsInstance.loadSource(videoSrc);
+            this.hlsInstance.attachMedia(videoEl);
+            this.hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+              this.playVideoSafely();
+            });
+          } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
+            // Нативная поддержка Safari / iOS
+            videoEl.src = videoSrc;
+            this.playVideoSafely();
+          }
+        } else {
+          // Обычный MP4 файл
+          if (this.player) {
+            this.player.source = {
+              type: 'video',
+              sources: [{ src: videoSrc, type: 'video/mp4' }]
+            };
+          }
+          this.playVideoSafely();
+        }
       }
     }
+  }
+
+  private playVideoSafely(): void {
+    setTimeout(() => {
+      if (this.player) {
+        this.player.play().catch(() => {
+          console.log("Autoplay restricted by mobile browser, waiting for user interaction.");
+        });
+      }
+    }, 200);
   }
 
   private handleAnswer(selectedIndex: number): void {
