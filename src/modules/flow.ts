@@ -15,7 +15,8 @@ export class FlowModule {
   private isAnswered: boolean = false;
   private lastAnswerWasCorrect: boolean = false;
   private player: any = null;
-  private hlsInstance: Hls | null = null;
+  private hlsInstance: any = null;
+
 
   constructor(container: HTMLElement, steps: FlowStep[], onFinished: () => void) {
     this.container = container;
