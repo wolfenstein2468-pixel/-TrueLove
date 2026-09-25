@@ -1,0 +1,47 @@
+/* Стили только для игрового модуля */
+.game-canvas {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  background: #0d0612;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 182, 193, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  display: block;
+}
+
+.game-controls {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+}
+
+.control-group {
+  display: flex;
+  gap: 8px;
+}
+
+.control-btn {
+  background: rgba(255, 77, 141, 0.15);
+  color: #ff4d8d;
+  border: 1px solid rgba(255, 77, 141, 0.4);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.control-btn:active {
+  background: rgba(255, 77, 141, 0.4);
+  transform: scale(0.95);
+}
+
+.jump-btn {
+  background: linear-gradient(135deg, #ff4d8d, #ff75a0);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 15px rgba(255, 77, 141, 0.3);
+}
