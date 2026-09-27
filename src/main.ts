@@ -18,7 +18,7 @@ new VaultModule(secretCode, () => {
   const app = document.getElementById('app');
   if (app) app.innerHTML = ''; // Очищаем контейнер сейфа
 
-  // Если пользователь уже проходил игру ранее — сразу открываем финал
+  // Если игра уже пройдена — сразу ведем к финалу
   if (GameStorage.isCompleted()) {
     showFinalReward(app);
     return;
@@ -34,15 +34,18 @@ new VaultModule(secretCode, () => {
     
     // 4. Запускаем квиз (FlowModule)
     if (app) {
+      app.innerHTML = ''; // Очищаем экран под квиз
       const storySteps: FlowStep[] = data.flowSteps as FlowStep[];
 
       new FlowModule(app, storySteps, () => {
-        // Квиз завершен! Запускаем мини-игру-платформер
+        // КВИЗ ЗАВЕРШЕН. Полностью очищаем app перед запуском игры!
+        app.innerHTML = ''; 
+        
+        // 5. Запускаем игру строго после квиза
         const game = new GameModule(app, () => {
-          // Победа: дошли до сундука
-          GameStorage.saveComplete(); // Сохраняем прогресс в localStorage
-          game.destroy(); // Убираем холст и кнопки игры
-          showFinalReward(app); // Показываем карточку награды
+          GameStorage.saveComplete();
+          game.destroy();
+          showFinalReward(app);
         });
         
         game.start();
@@ -51,7 +54,7 @@ new VaultModule(secretCode, () => {
   });
 });
 
-// Функция отрисовки финального экрана с наградой
+// Финальный экран с наградой
 function showFinalReward(container: HTMLElement | null) {
   if (!container) return;
   container.innerHTML = `
@@ -60,7 +63,7 @@ function showFinalReward(container: HTMLElement | null) {
       <div style="background: rgba(255, 77, 141, 0.15); border: 1px solid rgba(255, 77, 141, 0.4); padding: 24px; border-radius: 16px; width: 100%; max-width: 340px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
         <h3 style="color: #ff4d8d; margin-bottom: 10px; font-size: 20px;">🎁 Карточка Free Fire</h3>
         <p style="font-size: 14px; color: #ddd; line-height: 1.5;">
-          Сундук успешно собран, все уровни пройдены. Твой специальный бонус разблокирован!
+          Все этапы пройдены, награда разблокирована!
         </p>
       </div>
     </div>
