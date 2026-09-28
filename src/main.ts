@@ -6,15 +6,12 @@ import { GameStorage } from './modules/storage';
 import { FlowStep } from './types';
 import './modules/flow.css';
 import data from './data.json';
-import { initGame } from './modules/game'; // Укажи правильный путь к твоему файлу игры
-import { BackgroundSwitcher } from './BackgroundSwitcher';
+import { initGame } from './modules/game';
+import { BackgroundSwitcher } from './modules/BackgroundSwitcher'; // Путь с учетом папки modules
 
-// Пример корректного использования:
-const bgSwitcher = new BackgroundSwitcher('#appContainer');
+// Инициализируем менеджер фона (передаем ID твоего основного контейнера, например, #app)
+const bgSwitcher = new BackgroundSwitcher('#app');
 bgSwitcher.setBackground('color', '#1e3c72');
-
-// Запускаем игру, передавая ID канваса и спрайт
-initGame('gameCanvas', 'sprite.png');
 
 const secretCode = data.vault.secretCode as [number, number, number, number];
 
@@ -46,17 +43,45 @@ new VaultModule(secretCode, () => {
       const storySteps: FlowStep[] = data.flowSteps as FlowStep[];
 
       new FlowModule(app, storySteps, () => {
-        // КВИЗ ЗАВЕРШЕН. Полностью очищаем app перед запуском игры!
-        app.innerHTML = ''; 
+        // КВИЗ ЗАВЕРШЕН. Очищаем app и подготавливаем разметку для канваса игры
+        app.innerHTML = `
+          <div class="game-ui active" id="gameUi" style="display:flex; flex-direction:column; align-items:center; width:100%; height:100%;">
+            <div class="ui-bar">
+              <span>Прогресс:</span>
+              <span id="percentText">0%</span>
+            </div>
+            <div class="progress-bg">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="canvas-wrapper" style="position:relative; width:100%;">
+              <canvas id="gameCanvas" width="350" height="250"></canvas>
+              <button id="interactBtn" class="interact-btn">Сундук!</button>
+            </div>
+            <div class="controls" style="display:flex; justify-content:space-between; width:100%; margin-top:15px;">
+              <button id="btnLeft" class="ctrl-btn">◀</button>
+              <button id="btnRight" class="ctrl-btn">▶</button>
+            </div>
+          </div>
+
+          <!-- Диалоговое окно -->
+          <div id="dialogBox" class="dialog-box">
+            <div id="dialogAvatar" class="dialog-avatar"></div>
+            <div class="dialog-content">
+              <div class="dialog-speaker">Персонаж</div>
+              <div id="dialogText" class="dialog-text"></div>
+              <button id="dialogNext" class="dialog-next">Далее</button>
+            </div>
+          </div>
+
+          <!-- Модалка победы -->
+          <div id="winModal" class="win-modal">
+            <div class="win-title">Победа!</div>
+            <button id="finalRewardBtn" class="open-btn">Забрать награду</button>
+          </div>
+        `;
         
-        // 5. Запускаем игру строго после квиза
-        const game = new GameModule(app, () => {
-          GameStorage.saveComplete();
-          game.destroy();
-          showFinalReward(app);
-        });
-        
-        game.start();
+        // 5. Запускаем игру через initGame
+        initGame('gameCanvas', 'sprite.png');
       });
     }
   });
