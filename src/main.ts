@@ -2,11 +2,19 @@ import './styles.css';
 import { VaultModule } from './modules/vault';
 import { IntroModule } from './modules/intro';
 import { FlowModule } from './modules/flow';
-import { GameModule } from './modules/game';
 import { GameStorage } from './modules/storage';
 import { FlowStep } from './types';
 import './modules/flow.css';
 import data from './data.json';
+import { initGame } from './modules/game'; // Укажи правильный путь к твоему файлу игры
+import { BackgroundSwitcher } from './BackgroundSwitcher';
+
+// Пример корректного использования:
+const bgSwitcher = new BackgroundSwitcher('#appContainer');
+bgSwitcher.setBackground('color', '#1e3c72');
+
+// Запускаем игру, передавая ID канваса и спрайт
+initGame('gameCanvas', 'sprite.png');
 
 const secretCode = data.vault.secretCode as [number, number, number, number];
 
