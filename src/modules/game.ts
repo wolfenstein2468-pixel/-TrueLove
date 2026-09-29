@@ -1,5 +1,3 @@
-// Самостоятельно импортируем спрайт из папки assets
-import './game.css';
 import spriteSrc from '../assets/sprite.png';
 
 interface Skin {
@@ -14,7 +12,66 @@ const skins: Skin[] = [
 
 let currentSkinIndex = 0;
 
-export function initGame(spriteSrc: string): void {
+export async function initGame(container: HTMLElement): Promise<void> {
+    // Асинхронно подгружаем стили игры строго в момент вызова (как ленивый бэкенд)
+    await import('./game.css');
+
+    // Программно генерируем всю разметку игры внутри переданного контейнера
+    container.innerHTML = `
+        <div class="game-module-wrapper">
+            <!-- Экран выбора скинов -->
+            <div id="selectScreen" class="select-screen active">
+                <div class="select-title">ВЫБЕРИТЕ ПЕРСОНАЖА</div>
+                <div class="carousel-container">
+                    <button id="prevSkin" class="carousel-btn">&lt;</button>
+                    <div class="skin-display">
+                        <div id="skinPreview" class="skin-preview"></div>
+                        <div id="skinName" class="skin-name">Герой</div>
+                    </div>
+                    <button id="nextSkin" class="carousel-btn">&gt;</button>
+                </div>
+                <button id="startBtn" class="start-game-btn">ИГРАТЬ</button>
+            </div>
+
+            <!-- Игровой интерфейс -->
+            <div id="gameUi" class="game-ui-container">
+                <div class="ui-bar">
+                    <span>ПУТЬ К НАГРАДЕ</span>
+                    <span id="percentText">0%</span>
+                </div>
+                <div class="progress-bg">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+                <div class="canvas-wrapper">
+                    <canvas id="gameCanvas" width="380" height="280"></canvas>
+                    <button id="interactBtn" class="interact-btn">Открыть</button>
+                    
+                    <div id="dialogBox" class="dialog-box">
+                        <div id="dialogAvatar" class="dialog-avatar"></div>
+                        <div class="dialog-content">
+                            <div id="dialogText" class="dialog-text"></div>
+                            <button id="dialogNext" class="dialog-next">Далее</button>
+                        </div>
+                    </div>
+
+                    <div id="winModal" class="win-modal">
+                        <div class="win-title">ПОЗДРАВЛЯЕМ!</div>
+                        <button id="finalRewardBtn" class="open-btn">Забрать приз</button>
+                    </div>
+                </div>
+
+                <div class="controls-row">
+                    <button id="btnLeft" class="ctrl-btn">&larr;</button>
+                    <button id="btnRight" class="ctrl-btn">&rarr;</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    setupInterfaceAndGame();
+}
+
+function setupInterfaceAndGame(): void {
     const selectScreen = document.getElementById('selectScreen') as HTMLElement;
     const gameUi = document.getElementById('gameUi') as HTMLElement;
     const startBtn = document.getElementById('startBtn') as HTMLButtonElement;
@@ -45,12 +102,8 @@ export function initGame(spriteSrc: string): void {
 
     if (startBtn) {
         startBtn.addEventListener('click', () => {
-            document.querySelector('.intro-overlay')?.remove();
-            document.getElementById('myVideo')?.remove();
-            document.querySelector('.flow-screen-container')?.remove();
-            document.querySelector('.meme-overlay')?.remove();
-
-            if (selectScreen) selectScreen.classList.add('hidden');
+            if (selectScreen) selectScreen.classList.remove('active');
+            if (selectScreen) selectScreen.style.display = 'none';
             if (gameUi) gameUi.classList.add('active');
             
             startCanvasGame(skins[currentSkinIndex].src);
@@ -208,20 +261,17 @@ function startCanvasGame(spriteSrc: string): void {
         ctx.save();
         ctx.translate(-cameraX, 0);
 
-        // Земля
         ctx.fillStyle = '#5c3a21';
         ctx.fillRect(0, canvas.height - 50, worldWidth, 50);
         ctx.fillStyle = '#3d2413';
         ctx.fillRect(0, canvas.height - 50, worldWidth, 6);
 
-        // Сундук
         ctx.fillStyle = '#ffd700';
         ctx.fillRect(chestX, canvas.height - 90, 40, 40);
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 3;
         ctx.strokeRect(chestX, canvas.height - 90, 40, 40);
 
-        // Персонаж
         if (spriteSheet.complete && spriteSheet.naturalWidth > 0) {
             const frameWidth = spriteSheet.naturalWidth / spriteData.columns;
             const frameHeight = spriteSheet.naturalHeight / spriteData.rows;
