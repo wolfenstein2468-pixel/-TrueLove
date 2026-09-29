@@ -1,32 +1,34 @@
+// Самостоятельно импортируем спрайт из папки assets
+import spriteSrc from '../assets/sprite.png';
+
 export interface SkinConfig {
     name: string;
-    src: string;
+    src?: string;
 }
 
-export function initGame(canvasId: string, spriteSrc: string) {
+export function initGame(canvasId: string, customSpriteSrc?: string) {
     const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
     if (!canvas) {
         throw new Error(`Canvas с id "${canvasId}" не найден.`);
     }
     const ctx = canvas.getContext('2d')!;
 
-    // DOM-элементы внутри игрового интерфейса
+    // DOM-элементы интерфейса
     const progressFillEl = document.getElementById('progressFill') as HTMLElement;
     const percentTextEl = document.getElementById('percentText') as HTMLElement;
     const interactBtnEl = document.getElementById('interactBtn') as HTMLElement;
     const dialogBoxEl = document.getElementById('dialogBox') as HTMLElement;
-    const dialogAvatarEl = document.getElementById('dialogAvatar') as HTMLElement;
     const dialogTextEl = document.getElementById('dialogText') as HTMLElement;
     const dialogNextBtn = document.getElementById('dialogNext') as HTMLElement;
     const winModalEl = document.getElementById('winModal') as HTMLElement;
     const finalRewardBtn = document.getElementById('finalRewardBtn') as HTMLElement;
 
+    // Выбираем источник спрайта
+    const activeSpriteSrc = customSpriteSrc || spriteSrc;
+
     // Загрузка спрайта игрока
     const spriteSheet = new Image();
-    spriteSheet.src = spriteSrc;
-    if (dialogAvatarEl) {
-        dialogAvatarEl.style.backgroundImage = `url('${spriteSrc}')`;
-    }
+    spriteSheet.src = activeSpriteSrc;
 
     const spriteData = { columns: 3, rows: 4, rowIdle: 0, rowWalkLeft: 1, rowWalkRight: 2 };
     const worldWidth = 1200;
@@ -42,7 +44,7 @@ export function initGame(canvasId: string, spriteSrc: string) {
         "Отличная работа!"
     ];
 
-    // Управление кнопками ходьбы
+    // Управление кнопками движения
     function setupButton(id: string, dir: number) {
         const el = document.getElementById(id);
         if (!el) return;
@@ -57,7 +59,7 @@ export function initGame(canvasId: string, spriteSrc: string) {
     setupButton('btnLeft', -1);
     setupButton('btnRight', 1);
 
-    // Логика взаимодействия с сундуком
+    // Взаимодействие с сундуком
     if (interactBtnEl) {
         interactBtnEl.addEventListener('click', () => {
             isGamePaused = true;
@@ -119,12 +121,12 @@ export function initGame(canvasId: string, spriteSrc: string) {
             player.currentRow = spriteData.rowIdle;
         }
 
-        // Обновление прогресс-бара
+        // Обновление шкалы прогресса
         const progress = Math.min(100, Math.max(0, Math.floor((player.x / (chestX - 30)) * 100)));
         if (progressFillEl) progressFillEl.style.width = `${progress}%`;
         if (percentTextEl) percentTextEl.innerText = `${progress}%`;
 
-        // Проверка близости к сундуку
+        // Показ кнопки сундука у цели
         const isAtChest = (player.x + 25 >= chestX - 20);
         if (interactBtnEl) {
             interactBtnEl.style.display = (isAtChest && !isGamePaused) ? 'block' : 'none';
@@ -153,7 +155,7 @@ export function initGame(canvasId: string, spriteSrc: string) {
         ctx.lineWidth = 3;
         ctx.strokeRect(chestX, canvas.height - 90, 40, 40);
 
-        // Отрисовка персонажа из спрайт-листа
+        // Отрисовка персонажа
         if (spriteSheet.complete && spriteSheet.naturalWidth > 0) {
             const frameWidth = spriteSheet.naturalWidth / spriteData.columns;
             const frameHeight = spriteSheet.naturalHeight / spriteData.rows;
