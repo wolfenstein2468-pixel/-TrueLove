@@ -1,161 +1,336 @@
-.game-ui-container {
-  position: fixed; /* Вместо absolute ставим fixed, чтобы перекрыть весь экран */
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px;
-  box-sizing: border-box;
-  z-index: 9999; /* Ставим максимальный приоритет слоя */
-  font-family: sans-serif;
-  pointer-events: none;
-  background-color: #0b0f19; /* Возвращаем темный фон игры, чтобы точно перекрыть старую картинку с лягушками */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
+body {
+    background: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: white;
+    font-family: sans-serif;
+    overflow: hidden;
+}
 
-.game-ui-container > * {
-  pointer-events: auto;
+.game-container {
+    width: 100%;
+    max-width: 380px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+/* Экран выбора скинов */
+.select-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 30;
+    padding: 15px;
+    text-align: center;
+}
+
+.select-screen.hidden {
+    display: none;
+}
+
+.select-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #ffd700;
+    letter-spacing: 1px;
+}
+
+.carousel-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.carousel-btn {
+    background: #333;
+    color: white;
+    border: 2px solid #555;
+    font-size: 1.2rem;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.carousel-btn:active {
+    background: #555;
+}
+
+.skin-display {
+    width: 105px;
+    height: 135px;
+    background: #2a2a2a;
+    border: 3px solid #ffd700;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.skin-preview {
+    width: 60px;
+    height: 75px;
+    background-size: 300% 400%;
+    background-position: 0 0;
+    image-rendering: pixelated;
+}
+
+.skin-name {
+    margin-top: 6px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+.start-game-btn {
+    background: #ffd700;
+    color: #000;
+    font-weight: bold;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+}
+
+/* Игровой интерфейс */
+.game-ui {
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-ui.active {
+    display: flex;
 }
 
 .ui-bar {
-  background: rgba(0, 0, 0, 0.6);
-  padding: 6px 16px;
-  border-radius: 20px;
-  color: #fff;
-  font-size: 14px;
-  text-align: center;
+    width: 100%;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: bold;
+    letter-spacing: 1px;
 }
 
 .progress-bg {
-  width: 180px;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 3px;
-  overflow: hidden;
-  margin-top: 6px;
+    width: 100%;
+    height: 6px;
+    background: #333;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    border: 1px solid #555;
 }
 
 .progress-fill {
-  width: 0%;
-  height: 100%;
-  background: #4cd137;
-  transition: width 0.3s ease;
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #ff7e5f, #feb47b);
+    transition: width 0.1s linear;
 }
 
 .canvas-wrapper {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    position: relative;
+    width: 100%;
 }
 
-#gameCanvas {
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+canvas {
+    background: #ffc0cb;
+    border: 4px solid #fff;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    width: 100%;
+    max-width: 380px;
+    height: 280px;
+    display: block;
 }
 
+/* Кнопка взаимодействия */
 .interact-btn {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background: #ff4d8d;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    display: none;
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffd700;
+    color: #000;
+    font-weight: bold;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+    z-index: 10;
 }
 
-.controls-row {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 280px;
-  padding: 0 10px;
-  margin-bottom: 10px;
-}
-
-.ctrl-btn {
-  background: rgba(255, 255, 255, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  color: white;
-  font-size: 20px;
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
+/* Пиксельное диалоговое окно */
 .dialog-box {
-  position: absolute;
-  bottom: 80px;
-  left: 20px;
-  right: 20px;
-  background: rgba(20, 20, 30, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 14px;
-  padding: 14px;
-  display: none;
-  flex-direction: column;
-  gap: 6px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+    display: none;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    background: rgba(20, 20, 30, 0.95);
+    border: 3px solid #ffd700;
+    border-radius: 8px;
+    padding: 12px;
+    z-index: 15;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.7);
+}
+
+.dialog-box.active {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.dialog-avatar {
+    width: 50px;
+    height: 50px;
+    background: #444;
+    border: 2px solid #fff;
+    border-radius: 4px;
+    flex-shrink: 0;
+    background-size: 300% 400%;
+    background-position: 0 0;
+    image-rendering: pixelated;
+}
+
+.dialog-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .dialog-speaker {
-  font-size: 12px;
-  color: #ff4d8d;
-  font-weight: bold;
+    font-size: 0.75rem;
+    color: #ffd700;
+    font-weight: bold;
+    margin-bottom: 4px;
+    text-transform: uppercase;
 }
 
 .dialog-text {
-  font-size: 14px;
-  color: #fff;
-  line-height: 1.4;
+    font-size: 0.82rem;
+    line-height: 1.2;
+    color: #fff;
+    min-height: 30px;
 }
 
 .dialog-next {
-  align-self: flex-end;
-  background: #ff4d8d;
-  color: white;
-  border: none;
-  padding: 4px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: bold;
+    margin-top: 6px;
+    align-self: flex-end;
+    background: #ffd700;
+    color: #000;
+    border: none;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
+/* Модальное окно победы */
 .win-modal {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.85);
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  z-index: 30;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    text-align: center;
+    padding: 20px;
+}
+
+.win-modal.active {
+    display: flex;
 }
 
 .win-title {
-  font-size: 30px;
-  color: #ff4d8d;
-  font-weight: bold;
-  text-shadow: 0 0 20px rgba(255, 77, 141, 0.5);
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 12px 0;
+    color: #ffd700;
 }
 
 .open-btn {
-  background: #4cd137;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
+    background: #4cd137;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.ctrl-btn {
+    background: #222;
+    color: white;
+    border: 3px solid #fff;
+    font-size: 2rem;
+    width: 48%;
+    height: 65px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    touch-action: manipulation;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.ctrl-btn:active {
+    background: #444;
 }
