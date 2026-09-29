@@ -166,3 +166,8 @@ video#myVideo.fade-out {
   0%, 100% { transform: translateY(0); } 
   50% { transform: translateY(-10px); } 
 }
+
+// В момент завершения интро:
+document.querySelector('.intro-overlay')?.remove();
+document.getElementById('myVideo')?.remove();
+
