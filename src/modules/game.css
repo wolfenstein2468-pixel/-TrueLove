@@ -1,4 +1,4 @@
-/* Контейнер игровой UI (скрыт по умолчанию, показывается класс .active) */
+/* Контейнер игровой интерфейсной зоны */
 .game-ui {
   position: absolute;
   inset: 0;
@@ -9,35 +9,37 @@
   padding: 20px;
   box-sizing: border-box;
   z-index: 10;
-  pointer-events: none; /* Чтобы клики проходили сквозь пустые места */
+  pointer-events: none; /* Клики проходят сквозь пустые области */
 }
 
 .game-ui.active {
   display: flex;
 }
 
-/* Включаем клики обратно для интерактивных элементов */
+/* Возвращаем клики для интерактивных элементов игры */
 .game-ui button, 
 .game-ui .canvas-wrapper {
   pointer-events: auto;
 }
 
-/* Верхняя панель прогресса */
+/* Верхняя шкала прогресса */
 .ui-bar {
   background: rgba(0, 0, 0, 0.6);
-  padding: 6px 14px;
+  padding: 6px 16px;
   border-radius: 20px;
   color: #fff;
   font-size: 14px;
-  margin-bottom: 10px;
+  backdrop-filter: blur(5px);
+  margin-top: 10px;
 }
 
 .progress-bg {
-  width: 200px;
+  width: 220px;
   height: 8px;
   background: rgba(255, 255, 255, 0.3);
   border-radius: 4px;
   overflow: hidden;
+  margin-top: 8px;
 }
 
 .progress-fill {
@@ -47,21 +49,23 @@
   transition: width 0.3s ease;
 }
 
-/* Область с канвасом */
+/* Обертка для канваса игры */
 .canvas-wrapper {
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: auto 0;
 }
 
 #gameCanvas {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Кнопка взаимодействия (Сундук!) */
+/* Кнопка взаимодействия с сундуком */
 .interact-btn {
   position: absolute;
   bottom: 15px;
@@ -69,53 +73,73 @@
   background: #ff4d8d;
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
-/* Кнопки управления (влево/вправо) */
+/* Кнопки управления (влево / вправо) внизу */
 .controls {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 300px;
-  padding: 0 20px;
+  max-width: 320px;
+  padding: 0 10px;
+  margin-bottom: 20px;
 }
 
 .ctrl-btn {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.4);
   color: white;
-  font-size: 20px;
-  width: 50px;
-  height: 50px;
+  font-size: 22px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   cursor: pointer;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 /* Диалоговое окно */
 .dialog-box {
   position: absolute;
-  bottom: 80px;
+  bottom: 90px;
   left: 20px;
   right: 20px;
   background: rgba(20, 20, 30, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  padding: 15px;
-  display: none; /* Показывается скриптом по ходу игры */
-  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 14px;
+  padding: 16px;
+  display: none;
+  align-items: center;
+  gap: 14px;
   z-index: 20;
   pointer-events: auto;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+}
+
+.dialog-box.active {
+  display: flex;
+}
+
+.dialog-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+  border: 2px solid #ff4d8d;
 }
 
 .dialog-content {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
+  width: 100%;
 }
 
 .dialog-speaker {
@@ -127,6 +151,7 @@
 .dialog-text {
   font-size: 14px;
   color: #fff;
+  line-height: 1.4;
 }
 
 .dialog-next {
@@ -134,38 +159,48 @@
   background: #ff4d8d;
   color: white;
   border: none;
-  padding: 4px 12px;
+  padding: 6px 14px;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 4px;
 }
 
-/* Модалка победы */
+/* Модальное окно победы */
 .win-modal {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: none; /* Меняется на flex при победе */
+  background: rgba(0, 0, 0, 0.85);
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 20px;
   z-index: 30;
   pointer-events: auto;
+  backdrop-filter: blur(8px);
+}
+
+.win-modal.active {
+  display: flex;
 }
 
 .win-title {
-  font-size: 28px;
+  font-size: 32px;
   color: #ff4d8d;
   font-weight: bold;
+  text-shadow: 0 0 20px rgba(255, 77, 141, 0.5);
 }
 
 .open-btn {
   background: #4cd137;
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 10px;
+  padding: 14px 28px;
+  border-radius: 12px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
+  box-shadow: 0 4px 15px rgba(76, 209, 55, 0.4);
 }
