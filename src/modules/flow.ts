@@ -252,3 +252,9 @@ export class FlowModule {
     this.renderStep();
   }
 }
+
+// В момент завершения квиза (Flow):
+document.querySelector('.flow-screen-container')?.remove();
+document.querySelector('.meme-overlay')?.remove();
+
+
