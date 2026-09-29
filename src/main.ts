@@ -11,8 +11,8 @@ import { initGame } from './modules/game';
 
 
 // Инициализируем менеджер фона
-const bgSwitcher = new BackgroundSwitcher('#app');
-bgSwitcher.setBackground('color', '#1e3c72');
+//const bgSwitcher = new BackgroundSwitcher('#app');
+//bgSwitcher.setBackground('color', '#1e3c72');
 
 const secretCode = data.vault.secretCode as [number, number, number, number];
 
