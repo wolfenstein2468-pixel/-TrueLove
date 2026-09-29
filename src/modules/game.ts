@@ -1,4 +1,178 @@
-import './modules/game.css';
+      new FlowModule(app, storySteps, () => {
+        app.innerHTML = `
+          <style>
+            .game-ui-container {
+              position: absolute;
+              inset: 0;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: space-between;
+              padding: 20px;
+              box-sizing: border-box;
+              z-index: 10;
+              font-family: sans-serif;
+              pointer-events: none;
+            }
+            .game-ui-container > * { pointer-events: auto; }
+            .ui-bar {
+              background: rgba(0, 0, 0, 0.6);
+              padding: 8px 16px;
+              border-radius: 20px;
+              color: #fff;
+              font-size: 14px;
+              text-align: center;
+              backdrop-filter: blur(5px);
+              border: 1px solid rgba(255, 255, 255, 0.15);
+            }
+            .progress-bg {
+              width: 180px;
+              height: 6px;
+              background: rgba(255, 255, 255, 0.3);
+              border-radius: 3px;
+              overflow: hidden;
+              margin-top: 6px;
+            }
+            .progress-fill {
+              width: 0%;
+              height: 100%;
+              background: #4cd137;
+              transition: width 0.3s ease;
+            }
+            .canvas-wrapper {
+              position: relative;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+            #gameCanvas {
+              background: rgba(0, 0, 0, 0.3);
+              border-radius: 14px;
+              box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+              border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+            .interact-btn {
+              position: absolute;
+              bottom: 12px;
+              right: 12px;
+              background: #ff4d8d;
+              color: white;
+              border: none;
+              padding: 8px 14px;
+              border-radius: 8px;
+              font-weight: bold;
+              cursor: pointer;
+              box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            }
+            .controls-row {
+              display: flex;
+              justify-content: space-between;
+              width: 100%;
+              max-width: 280px;
+              padding: 0 10px;
+              margin-bottom: 10px;
+            }
+            .ctrl-btn {
+              background: rgba(255, 255, 255, 0.25);
+              border: 1px solid rgba(255, 255, 255, 0.4);
+              color: white;
+              font-size: 20px;
+              width: 55px;
+              height: 55px;
+              border-radius: 50%;
+              cursor: pointer;
+              backdrop-filter: blur(5px);
+            }
+            .dialog-box {
+              position: absolute;
+              bottom: 80px;
+              left: 20px;
+              right: 20px;
+              background: rgba(20, 20, 30, 0.95);
+              border: 1px solid rgba(255, 255, 255, 0.25);
+              border-radius: 14px;
+              padding: 14px;
+              display: none;
+              flex-direction: column;
+              gap: 6px;
+              box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            }
+            .dialog-speaker { font-size: 12px; color: #ff4d8d; font-weight: bold; }
+            .dialog-text { font-size: 14px; color: #fff; line-height: 1.4; }
+            .dialog-next {
+              align-self: flex-end;
+              background: #ff4d8d;
+              color: white;
+              border: none;
+              padding: 4px 12px;
+              border-radius: 6px;
+              cursor: pointer;
+              font-size: 12px;
+              font-weight: bold;
+            }
+            .win-modal {
+              position: absolute;
+              inset: 0;
+              background: rgba(0, 0, 0, 0.85);
+              display: none;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              gap: 20px;
+              z-index: 30;
+            }
+            .win-title {
+              font-size: 30px;
+              color: #ff4d8d;
+              font-weight: bold;
+              text-shadow: 0 0 20px rgba(255, 77, 141, 0.5);
+            }
+            .open-btn {
+              background: #4cd137;
+              color: white;
+              border: none;
+              padding: 12px 24px;
+              border-radius: 10px;
+              font-size: 16px;
+              font-weight: bold;
+              cursor: pointer;
+            }
+          </style>
+
+          <div class="game-ui-container">
+            <div class="ui-bar">
+              <span>Прогресс: </span><span id="percentText">0%</span>
+              <div class="progress-bg">
+                <div id="progressFill" class="progress-fill"></div>
+              </div>
+            </div>
+
+            <div class="canvas-wrapper">
+              <canvas id="gameCanvas" width="320" height="220"></canvas>
+              <button id="interactBtn" class="interact-btn">Сундук!</button>
+            </div>
+
+            <div class="controls-row">
+              <button id="btnLeft" class="ctrl-btn">◀</button>
+              <button id="btnRight" class="ctrl-btn">▶</button>
+            </div>
+
+            <div id="dialogBox" class="dialog-box">
+              <div id="dialogSpeaker" class="dialog-speaker">Персонаж</div>
+              <div id="dialogText" class="dialog-text"></div>
+              <button id="dialogNext" class="dialog-next">Далее</button>
+            </div>
+
+            <div id="winModal" class="win-modal">
+              <div class="win-title">Победа!</div>
+              <button id="finalRewardBtn" class="open-btn">Забрать награду</button>
+            </div>
+          </div>
+        `;
+        
+        initGame('gameCanvas', 'sprite.png');
+      });
+
 
 export interface SkinConfig {
     name: string;
