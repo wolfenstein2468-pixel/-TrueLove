@@ -5,9 +5,8 @@ import { FlowModule } from './modules/flow';
 import { GameStorage } from './modules/storage';
 import { FlowStep } from './types';
 import './modules/flow.css';
-import './modules/game.css';
 import data from './data.json';
-import { initGame } from './modules/game'; // Импортируем функцию игры
+// ВНИМАНИЕ: game.css больше не импортируем здесь! Он подгрузится внутри game.ts асинхронно.
 
 const secretCode = data.vault.secretCode as [number, number, number, number];
 
@@ -33,66 +32,29 @@ new VaultModule(secretCode, () => {
             app.innerHTML = '';
             const storySteps: FlowStep[] = data.flowSteps as FlowStep[];
 
-            new FlowModule(app, storySteps, () => {
-                // Разметка для экрана выбора скина и игры
-                app.innerHTML = `
-                    <!-- Экран выбора скина -->
-                    <div id="selectScreen" class="select-screen">
-                        <h2>Выбери своего героя</h2>
-                        <div class="carousel-container">
-                            <button id="prevSkin" class="ctrl-btn">◄</button>
-                            <div id="skinPreview" class="skin-preview"></div>
-                            <button id="nextSkin" class="ctrl-btn">►</button>
-                        </div>
-                        <div id="skinName" class="skin-name">Герой 1</div>
-                        <button id="startBtn" class="open-btn">В бой!</button>
-                    </div>
+            new FlowModule(app, storySteps, async () => {
+                // Квиз закончен! Очищаем экран под игру
+                app.innerHTML = '';
 
-                    <!-- Игровой интерфейс (изначально скрыт) -->
-                    <div id="gameUi" class="game-ui-container">
-                        <div class="ui-bar">
-                            <span>Прогресс:</span>
-                            <span id="percentText">0%</span>
-                        </div>
-                        <div class="progress-bg">
-                            <div id="progressFill" class="progress-fill"></div>
-                        </div>
+                // Создаем обертку для игры, чтобы изолировать стили
+                const gameWrapper = document.createElement('div');
+                gameWrapper.className = 'game-module-wrapper';
+                app.appendChild(gameWrapper);
 
-                        <div class="canvas-wrapper">
-                            <canvas id="gameCanvas" width="320" height="220"></canvas>
-                            <button id="interactBtn" class="interact-btn">Сундук!</button>
-
-                            <div id="dialogBox" class="dialog-box">
-                                <div id="dialogAvatar" class="dialog-avatar"></div>
-                                <div class="dialog-content">
-                                    <div id="dialogText" class="dialog-text">Приветствую!</div>
-                                    <button id="dialogNext" class="dialog-next">Далее</button>
-                                </div>
-                            </div>
-
-                            <div id="winModal" class="win-modal">
-                                <div class="win-title">Победа!</div>
-                                <button id="finalRewardBtn" class="open-btn">Забрать награду</button>
-                            </div>
-                        </div>
-
-                        <div class="controls-row">
-                            <button id="btnLeft" class="ctrl-btn">◄</button>
-                            <button id="btnRight" class="ctrl-btn">►</button>
-                        </div>
-                    </div>
-                `;
+                // Асинхронно подгружаем и запускаем модуль игры (Vite сделает это отдельным чанком)
+                const gameModule = await import('./modules/game');
+                gameModule.initGame(gameWrapper);
             });
         }
     });
 });
 
-// Финальный экран с наградой
+// Финальный экран с наградой (если уже всё пройдено ранее)
 function showFinalReward(container: HTMLElement | null) {
     if (!container) return;
     container.innerHTML = `
-        <div style="text-align: center; padding: 30px; display: flex; flex-direction: column; align-items: center; font-size: 20px;">
-            🎁 Карточка
+        <div style="text-align: center; padding: 30px; display: flex; flex-direction: column; align-items: center; font-size: 20px; color: white;">
+            🎁 Награда уже получена!
         </div>
     `;
 }
