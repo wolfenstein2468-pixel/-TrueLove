@@ -7,12 +7,12 @@ import { FlowStep } from './types';
 import './modules/flow.css';
 import data from './data.json';
 import { initGame } from './modules/game'; // Импортируем функцию initGame, а не GameModule!
-import { BackgroundSwitcher } from './modules/BackgroundSwitcher';
+//import { BackgroundSwitcher } from './modules/BackgroundSwitcher';
 
 
 // Инициализируем менеджер фона
-const bgSwitcher = new BackgroundSwitcher('#app');
-bgSwitcher.setBackground('color', '#1e3c72');
+//const bgSwitcher = new BackgroundSwitcher('#app');
+//bgSwitcher.setBackground('color', '#1e3c72');
 
 const secretCode = data.vault.secretCode as [number, number, number, number];
 
