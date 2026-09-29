@@ -1,4 +1,5 @@
 // Самостоятельно импортируем спрайт из папки assets
+import './game.css';
 import spriteSrc from '../assets/sprite.png';
 interface Skin {
     name: string;
