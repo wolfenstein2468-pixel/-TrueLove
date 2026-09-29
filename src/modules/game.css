@@ -1,5 +1,5 @@
 .game-ui-container {
-  position: absolute;
+  position: fixed; /* Вместо absolute ставим fixed, чтобы перекрыть весь экран */
   inset: 0;
   display: flex;
   flex-direction: column;
@@ -7,10 +7,12 @@
   justify-content: space-between;
   padding: 20px;
   box-sizing: border-box;
-  z-index: 10;
+  z-index: 9999; /* Ставим максимальный приоритет слоя */
   font-family: sans-serif;
   pointer-events: none;
+  background-color: #0b0f19; /* Возвращаем темный фон игры, чтобы точно перекрыть старую картинку с лягушками */
 }
+
 
 .game-ui-container > * {
   pointer-events: auto;
