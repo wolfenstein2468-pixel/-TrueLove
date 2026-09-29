@@ -7,6 +7,7 @@ import { FlowStep } from './types';
 import './modules/flow.css';
 import './modules/game.css';
 import data from './data.json';
+// Импортируем initGame из модуля игры (путь скорректируй под структуру своего проекта)
 import { initGame } from './modules/game';
 
 const secretCode = data.vault.secretCode as [number, number, number, number];
@@ -34,8 +35,22 @@ new VaultModule(secretCode, () => {
             const storySteps: FlowStep[] = data.flowSteps as FlowStep[];
 
             new FlowModule(app, storySteps, () => {
+                // Разметка для экрана выбора скина и игры
                 app.innerHTML = `
-                    <div class="game-ui-container">
+                    <!-- Экран выбора скина -->
+                    <div id="selectScreen" class="select-screen">
+                        <h2>Выбери своего героя</h2>
+                        <div class="carousel-container">
+                            <button id="prevSkin" class="ctrl-btn">◄</button>
+                            <div id="skinPreview" class="skin-preview"></div>
+                            <button id="nextSkin" class="ctrl-btn">►</button>
+                        </div>
+                        <div id="skinName" class="skin-name">Герой 1</div>
+                        <button id="startBtn" class="open-btn">В бой!</button>
+                    </div>
+
+                    <!-- Игровой интерфейс (изначально скрыт) -->
+                    <div id="gameUi" class="game-ui-container">
                         <div class="ui-bar">
                             <span>Прогресс:</span>
                             <span id="percentText">0%</span>
@@ -49,9 +64,11 @@ new VaultModule(secretCode, () => {
                             <button id="interactBtn" class="interact-btn">Сундук!</button>
 
                             <div id="dialogBox" class="dialog-box">
-                                <div id="dialogSpeaker" class="dialog-speaker">Персонаж</div>
-                                <div id="dialogText" class="dialog-text">Приветствую! Сундук твой.</div>
-                                <button id="dialogNext" class="dialog-next">Далее</button>
+                                <div id="dialogAvatar" class="dialog-avatar"></div>
+                                <div class="dialog-content">
+                                    <div id="dialogText" class="dialog-text">Приветствую!</div>
+                                    <button id="dialogNext" class="dialog-next">Далее</button>
+                                </div>
                             </div>
 
                             <div id="winModal" class="win-modal">
@@ -67,15 +84,15 @@ new VaultModule(secretCode, () => {
                     </div>
                 `;
 
-                // 5. Запускаем игру
-                initGame('gameCanvas', 'sprite.png');
+                // 5. После отрисовки DOM скрипт из твоих модулей подхватит элементы по ID, 
+                // а инициализация игры запустится по клику на startBtn.
             });
         }
     });
 });
 
 // Финальный экран с наградой
-function showFinalReward(container: HTMLElement | null) {
+function showFinal`ard(container: HTMLElement | null) {
     if (!container) return;
     container.innerHTML = `
         <div style="text-align: center; padding: 30px; display: flex; flex-direction: column; align-items: center; font-size: 20px;">
