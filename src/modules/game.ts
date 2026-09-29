@@ -1,4 +1,5 @@
 import './modules/game.css';
+
 export interface SkinConfig {
     name: string;
     src: string;
