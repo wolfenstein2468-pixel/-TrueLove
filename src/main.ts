@@ -7,9 +7,9 @@ import { FlowStep } from './types';
 import './modules/flow.css';
 import data from './data.json';
 import { initGame } from './modules/game';
-import { BackgroundSwitcher } from './modules/BackgroundSwitcher'; // Путь с учетом папки modules
+import { BackgroundSwitcher } from './modules/BackgroundSwitcher';
 
-// Инициализируем менеджер фона (передаем ID твоего основного контейнера, например, #app)
+// Инициализируем менеджер фона
 const bgSwitcher = new BackgroundSwitcher('#app');
 bgSwitcher.setBackground('color', '#1e3c72');
 
@@ -21,29 +21,25 @@ document.body.classList.add('intro-stage');
 // 2. Запускаем сейф
 new VaultModule(secretCode, () => {
   const app = document.getElementById('app');
-  if (app) app.innerHTML = ''; // Очищаем контейнер сейфа
+  if (app) app.innerHTML = '';
 
-  // Если игра уже пройдена — сразу ведем к финалу
   if (GameStorage.isCompleted()) {
     showFinalReward(app);
     return;
   }
 
-  // Показываем конверт
   document.getElementById('modalOverlay')?.classList.remove('hidden');
   
   // 3. Запускаем модуль письма/видео
   new IntroModule(() => {
-    // Видео закончилось, убираем временный класс сцены
     document.body.classList.remove('intro-stage');
     
     // 4. Запускаем квиз (FlowModule)
     if (app) {
-      app.innerHTML = ''; // Очищаем экран под квиз
+      app.innerHTML = '';
       const storySteps: FlowStep[] = data.flowSteps as FlowStep[];
 
       new FlowModule(app, storySteps, () => {
-        // КВИЗ ЗАВЕРШЕН. Очищаем app и подготавливаем разметку для канваса игры
         app.innerHTML = `
           <div class="game-ui active" id="gameUi" style="display:flex; flex-direction:column; align-items:center; width:100%; height:100%;">
             <div class="ui-bar">
@@ -80,7 +76,7 @@ new VaultModule(secretCode, () => {
           </div>
         `;
         
-        // 5. Запускаем игру через initGame
+        // 5. Запускаем игру
         initGame('gameCanvas', 'sprite.png');
       });
     }
