@@ -14,44 +14,55 @@ const skins: Skin[] = [
 
 let currentSkinIndex = 0;
 
-const selectScreen = document.getElementById('selectScreen') as HTMLElement;
-const gameUi = document.getElementById('gameUi') as HTMLElement;
-const startBtn = document.getElementById('startBtn') as HTMLButtonElement;
-const prevSkinBtn = document.getElementById('prevSkin') as HTMLButtonElement;
-const nextSkinBtn = document.getElementById('nextSkin') as HTMLButtonElement;
-const skinPreviewEl = document.getElementById('skinPreview') as HTMLElement;
-const skinNameEl = document.getElementById('skinName') as HTMLElement;
+export function initGame(spriteSrc: string): void {
+    const selectScreen = document.getElementById('selectScreen') as HTMLElement;
+    const gameUi = document.getElementById('gameUi') as HTMLElement;
+    const startBtn = document.getElementById('startBtn') as HTMLButtonElement;
+    const prevSkinBtn = document.getElementById('prevSkin') as HTMLButtonElement;
+    const nextSkinBtn = document.getElementById('nextSkin') as HTMLButtonElement;
+    const skinPreviewEl = document.getElementById('skinPreview') as HTMLElement;
+    const skinNameEl = document.getElementById('skinName') as HTMLElement;
 
-function updateCarousel(): void {
-    const skin = skins[currentSkinIndex];
-    skinPreviewEl.style.backgroundImage = `url('${skin.src}')`;
-    skinNameEl.innerText = skin.name;
+    function updateCarousel(): void {
+        const skin = skins[currentSkinIndex];
+        if (skinPreviewEl) skinPreviewEl.style.backgroundImage = `url('${skin.src}')`;
+        if (skinNameEl) skinNameEl.innerText = skin.name;
+    }
+
+    if (prevSkinBtn) {
+        prevSkinBtn.addEventListener('click', () => {
+            currentSkinIndex = (currentSkinIndex - 1 + skins.length) % skins.length;
+            updateCarousel();
+        });
+    }
+
+    if (nextSkinBtn) {
+        nextSkinBtn.addEventListener('click', () => {
+            currentSkinIndex = (currentSkinIndex + 1) % skins.length;
+            updateCarousel();
+        });
+    }
+
+    if (startBtn) {
+        startBtn.addEventListener('click', () => {
+            document.querySelector('.intro-overlay')?.remove();
+            document.getElementById('myVideo')?.remove();
+            document.querySelector('.flow-screen-container')?.remove();
+            document.querySelector('.meme-overlay')?.remove();
+
+            if (selectScreen) selectScreen.classList.add('hidden');
+            if (gameUi) gameUi.classList.add('active');
+            
+            startCanvasGame(skins[currentSkinIndex].src);
+        });
+    }
+
+    updateCarousel();
 }
 
-prevSkinBtn.addEventListener('click', () => {
-    currentSkinIndex = (currentSkinIndex - 1 + skins.length) % skins.length;
-    updateCarousel();
-});
-
-nextSkinBtn.addEventListener('click', () => {
-    currentSkinIndex = (currentSkinIndex + 1) % skins.length;
-    updateCarousel();
-});
-
-startBtn.addEventListener('click', () => {
-    document.querySelector('.intro-overlay')?.remove();
-    document.getElementById('myVideo')?.remove();
-    document.querySelector('.flow-screen-container')?.remove();
-    document.querySelector('.meme-overlay')?.remove();
-
-    selectScreen.classList.add('hidden');
-    gameUi.classList.add('active');
-    initGame(skins[currentSkinIndex].src);
-});
-
-// ОБЯЗАТЕЛЬНО добавляем export перед функцией!
-export function initGame(spriteSrc: string): void {
+function startCanvasGame(spriteSrc: string): void {
     const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
+    if (!canvas) return;
     const ctx = canvas.getContext('2d')!;
     const progressFillEl = document.getElementById('progressFill') as HTMLElement;
     const percentTextEl = document.getElementById('percentText') as HTMLElement;
@@ -114,30 +125,36 @@ export function initGame(spriteSrc: string): void {
     setupButton('btnLeft', -1);
     setupButton('btnRight', 1);
 
-    interactBtnEl.addEventListener('click', () => {
-        isGamePaused = true;
-        activeDirection = 0;
-        interactBtnEl.style.display = 'none';
-        dialogStep = 0;
-        dialogTextEl.innerText = dialogLines[0];
-        dialogBoxEl.classList.add('active');
-    });
+    if (interactBtnEl) {
+        interactBtnEl.addEventListener('click', () => {
+            isGamePaused = true;
+            activeDirection = 0;
+            interactBtnEl.style.display = 'none';
+            dialogStep = 0;
+            if (dialogTextEl) dialogTextEl.innerText = dialogLines[0];
+            if (dialogBoxEl) dialogBoxEl.classList.add('active');
+        });
+    }
 
-    dialogNextBtn.addEventListener('click', () => {
-        dialogStep++;
-        if (dialogStep < dialogLines.length) {
-            dialogTextEl.innerText = dialogLines[dialogStep];
-        } else {
-            dialogBoxEl.classList.remove('active');
-            winModalEl.classList.add('active');
-        }
-    });
+    if (dialogNextBtn) {
+        dialogNextBtn.addEventListener('click', () => {
+            dialogStep++;
+            if (dialogStep < dialogLines.length) {
+                if (dialogTextEl) dialogTextEl.innerText = dialogLines[dialogStep];
+            } else {
+                if (dialogBoxEl) dialogBoxEl.classList.remove('active');
+                if (winModalEl) winModalEl.classList.add('active');
+            }
+        });
+    }
 
-    finalRewardBtn.addEventListener('click', () => {
-        winModalEl.classList.remove('active');
-        player.x = 40;
-        isGamePaused = false;
-    });
+    if (finalRewardBtn) {
+        finalRewardBtn.addEventListener('click', () => {
+            if (winModalEl) winModalEl.classList.remove('active');
+            player.x = 40;
+            isGamePaused = false;
+        });
+    }
 
     let frameTimer = 0;
     const frameInterval = 8;
@@ -173,11 +190,13 @@ export function initGame(spriteSrc: string): void {
         }
 
         const progress = Math.min(100, Math.max(0, Math.floor((player.x / (chestX - 30)) * 100)));
-        progressFillEl.style.width = `${progress}%`;
-        percentTextEl.innerText = `${progress}%`;
+        if (progressFillEl) progressFillEl.style.width = `${progress}%`;
+        if (percentTextEl) percentTextEl.innerText = `${progress}%`;
 
         const isAtChest = (player.x + 25 >= chestX - 20);
-        interactBtnEl.style.display = (isAtChest && !isGamePaused) ? 'block' : 'none';
+        if (interactBtnEl) {
+            interactBtnEl.style.display = (isAtChest && !isGamePaused) ? 'block' : 'none';
+        }
     }
 
     function draw(): void {
