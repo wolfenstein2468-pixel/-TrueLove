@@ -9,11 +9,6 @@ import './modules/game.css';
 import data from './data.json';
 import { initGame } from './modules/game';
 
-
-// Инициализируем менеджер фона
-//const bgSwitcher = new BackgroundSwitcher('#app');
-//bgSwitcher.setBackground('color', '#1e3c72');
-
 const secretCode = data.vault.secretCode as [number, number, number, number];
 
 // 1. При старте включаем фоновый стиль для сейфа
@@ -31,11 +26,9 @@ new VaultModule(secretCode, () => {
 
     // 3. Запускаем модуль письма/видео
     new IntroModule(() => {
-        
         document.body.classList.remove('intro-stage');
 
         // 4. Запускаем квиз
-        FlowModule
         if (app) {
             app.innerHTML = '';
             const storySteps: FlowStep[] = data.flowSteps as FlowStep[];
@@ -89,4 +82,4 @@ function showFinalReward(container: HTMLElement | null) {
             🎁 Карточка
         </div>
     `;
-      }
+}
