@@ -304,4 +304,5 @@ function startCanvasGame(spriteSrc: string): void {
     if (spriteSheet.complete) {
         requestAnimationFrame(gameLoop);
     }
-}
+        }
+        
