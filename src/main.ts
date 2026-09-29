@@ -6,8 +6,9 @@ import { GameStorage } from './modules/storage';
 import { FlowStep } from './types';
 import './modules/flow.css';
 import data from './data.json';
-import { initGame } from './modules/game';
+import { initGame } from './modules/game'; // Импортируем функцию initGame, а не GameModule!
 import { BackgroundSwitcher } from './modules/BackgroundSwitcher';
+
 
 // Инициализируем менеджер фона
 const bgSwitcher = new BackgroundSwitcher('#app');
