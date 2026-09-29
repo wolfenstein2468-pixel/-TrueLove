@@ -1,55 +1,105 @@
 // Самостоятельно импортируем спрайт из папки assets
 import spriteSrc from '../assets/sprite.png';
-
-export interface SkinConfig {
+interface Skin {
     name: string;
-    src?: string;
+    src: string;
 }
 
-export function initGame(canvasId: string, customSpriteSrc?: string) {
-    const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
-    if (!canvas) {
-        throw new Error(`Canvas с id "${canvasId}" не найден.`);
-    }
-    const ctx = canvas.getContext('2d')!;
+const skins: Skin[] = [
+    { name: "Герой 1", src: "sprite.png" },
+    { name: "Герой 2", src: "sprite2.png" }
+];
 
-    // DOM-элементы интерфейса
+let currentSkinIndex = 0;
+
+const selectScreen = document.getElementById('selectScreen') as HTMLElement;
+const gameUi = document.getElementById('gameUi') as HTMLElement;
+const startBtn = document.getElementById('startBtn') as HTMLButtonElement;
+const prevSkinBtn = document.getElementById('prevSkin') as HTMLButtonElement;
+const nextSkinBtn = document.getElementById('nextSkin') as HTMLButtonElement;
+const skinPreviewEl = document.getElementById('skinPreview') as HTMLElement;
+const skinNameEl = document.getElementById('skinName') as HTMLElement;
+
+function updateCarousel(): void {
+    const skin = skins[currentSkinIndex];
+    skinPreviewEl.style.backgroundImage = `url('${skin.src}')`;
+    skinNameEl.innerText = skin.name;
+}
+
+prevSkinBtn.addEventListener('click', () => {
+    currentSkinIndex = (currentSkinIndex - 1 + skins.length) % skins.length;
+    updateCarousel();
+});
+
+nextSkinBtn.addEventListener('click', () => {
+    currentSkinIndex = (currentSkinIndex + 1) % skins.length;
+    updateCarousel();
+});
+
+startBtn.addEventListener('click', () => {
+    // Не забываем подчистить оверлеи предыдущих модулей, если они остались
+    document.querySelector('.intro-overlay')?.remove();
+    document.getElementById('myVideo')?.remove();
+    document.querySelector('.flow-screen-container')?.remove();
+    document.querySelector('.meme-overlay')?.remove();
+
+    selectScreen.classList.add('hidden');
+    gameUi.classList.add('active');
+    initGame(skins[currentSkinIndex].src);
+});
+
+export function initGame(spriteSrc: string): void {
+    const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d')!;
     const progressFillEl = document.getElementById('progressFill') as HTMLElement;
     const percentTextEl = document.getElementById('percentText') as HTMLElement;
-    const interactBtnEl = document.getElementById('interactBtn') as HTMLElement;
+    const interactBtnEl = document.getElementById('interactBtn') as HTMLButtonElement;
     const dialogBoxEl = document.getElementById('dialogBox') as HTMLElement;
+    const dialogAvatarEl = document.getElementById('dialogAvatar') as HTMLElement;
     const dialogTextEl = document.getElementById('dialogText') as HTMLElement;
-    const dialogNextBtn = document.getElementById('dialogNext') as HTMLElement;
+    const dialogNextBtn = document.getElementById('dialogNext') as HTMLButtonElement;
     const winModalEl = document.getElementById('winModal') as HTMLElement;
-    const finalRewardBtn = document.getElementById('finalRewardBtn') as HTMLElement;
+    const finalRewardBtn = document.getElementById('finalRewardBtn') as HTMLButtonElement;
 
-    // Выбираем источник спрайта
-    const activeSpriteSrc = customSpriteSrc || spriteSrc;
-
-    // Загрузка спрайта игрока
     const spriteSheet = new Image();
-    spriteSheet.src = activeSpriteSrc;
+    spriteSheet.src = spriteSrc;
+    dialogAvatarEl.style.backgroundImage = `url('${spriteSrc}')`;
 
-    const spriteData = { columns: 3, rows: 4, rowIdle: 0, rowWalkLeft: 1, rowWalkRight: 2 };
+    const spriteData = {
+        columns: 3,
+        rows: 4,
+        rowIdle: 0,
+        rowWalkLeft: 1,
+        rowWalkRight: 2
+    };
+
     const worldWidth = 1200;
     const chestX = 1100;
 
-    let player = { x: 40, y: 160, scale: 0.3, speed: 3.5, currentFrame: 1, currentRow: 0, isMoving: false };
+    let player = {
+        x: 40,
+        y: 160,
+        scale: 0.3,
+        speed: 3.5,
+        currentFrame: 1,
+        currentRow: 0,
+        isMoving: false
+    };
+
     let activeDirection = 0;
     let isGamePaused = false;
     let dialogStep = 0;
 
     const dialogLines = [
-        "Приветствую! Сундук твой.",
-        "Отличная работа!"
+        "Приветствую! Путь к сундуку открыт, но будь осторожна на дороге.",
+        "Спасибо за подсказку! Скоро я заберу свою награду."
     ];
 
-    // Управление кнопками движения
-    function setupButton(id: string, dir: number) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        const start = (e: Event) => { e.preventDefault(); if (!isGamePaused) activeDirection = dir; };
+    function setupButton(id: string, dir: number): void {
+        const el = document.getElementById(id) as HTMLButtonElement;
+        const start = (e: Event) => { e.preventDefault(); if(!isGamePaused) activeDirection = dir; };
         const end = (e: Event) => { e.preventDefault(); if (activeDirection === dir) activeDirection = 0; };
+
         el.addEventListener('touchstart', start);
         el.addEventListener('touchend', end);
         el.addEventListener('mousedown', start);
@@ -59,47 +109,43 @@ export function initGame(canvasId: string, customSpriteSrc?: string) {
     setupButton('btnLeft', -1);
     setupButton('btnRight', 1);
 
-    // Взаимодействие с сундуком
-    if (interactBtnEl) {
-        interactBtnEl.addEventListener('click', () => {
-            isGamePaused = true;
-            activeDirection = 0;
-            interactBtnEl.style.display = 'none';
-            dialogStep = 0;
-            if (dialogTextEl) dialogTextEl.innerText = dialogLines[0];
-            dialogBoxEl?.classList.add('active');
-        });
-    }
+    interactBtnEl.addEventListener('click', () => {
+        isGamePaused = true;
+        activeDirection = 0;
+        interactBtnEl.style.display = 'none';
+        dialogStep = 0;
+        dialogTextEl.innerText = dialogLines[0];
+        dialogBoxEl.classList.add('active');
+    });
 
-    if (dialogNextBtn) {
-        dialogNextBtn.addEventListener('click', () => {
-            dialogStep++;
-            if (dialogStep < dialogLines.length) {
-                if (dialogTextEl) dialogTextEl.innerText = dialogLines[dialogStep];
-            } else {
-                dialogBoxEl?.classList.remove('active');
-                winModalEl?.classList.add('active');
-            }
-        });
-    }
+    dialogNextBtn.addEventListener('click', () => {
+        dialogStep++;
+        if (dialogStep < dialogLines.length) {
+            dialogTextEl.innerText = dialogLines[dialogStep];
+        } else {
+            dialogBoxEl.classList.remove('active');
+            winModalEl.classList.add('active');
+        }
+    });
 
-    if (finalRewardBtn) {
-        finalRewardBtn.addEventListener('click', () => {
-            winModalEl?.classList.remove('active');
-            player.x = 40;
-            isGamePaused = false;
-        });
-    }
+    finalRewardBtn.addEventListener('click', () => {
+        winModalEl.classList.remove('active');
+        player.x = 40;
+        isGamePaused = false;
+    });
 
     let frameTimer = 0;
     const frameInterval = 8;
 
-    function update() {
+    function update(): void {
         if (isGamePaused) return;
+
         player.isMoving = false;
 
         if (activeDirection === 1) {
-            if (player.x + 30 < chestX) player.x += player.speed;
+            if (player.x + 30 < chestX) {
+                player.x += player.speed;
+            }
             player.currentRow = spriteData.rowWalkRight;
             player.isMoving = true;
         } else if (activeDirection === -1) {
@@ -121,19 +167,15 @@ export function initGame(canvasId: string, customSpriteSrc?: string) {
             player.currentRow = spriteData.rowIdle;
         }
 
-        // Обновление шкалы прогресса
         const progress = Math.min(100, Math.max(0, Math.floor((player.x / (chestX - 30)) * 100)));
-        if (progressFillEl) progressFillEl.style.width = `${progress}%`;
-        if (percentTextEl) percentTextEl.innerText = `${progress}%`;
+        progressFillEl.style.width = `${progress}%`;
+        percentTextEl.innerText = `${progress}%`;
 
-        // Показ кнопки сундука у цели
         const isAtChest = (player.x + 25 >= chestX - 20);
-        if (interactBtnEl) {
-            interactBtnEl.style.display = (isAtChest && !isGamePaused) ? 'block' : 'none';
-        }
+        interactBtnEl.style.display = (isAtChest && !isGamePaused) ? 'block' : 'none';
     }
 
-    function draw() {
+    function draw(): void {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         let cameraX = player.x - (canvas.width / 2) + 20;
@@ -142,7 +184,7 @@ export function initGame(canvasId: string, customSpriteSrc?: string) {
         ctx.save();
         ctx.translate(-cameraX, 0);
 
-        // Земля / платформа
+        // Земля
         ctx.fillStyle = '#5c3a21';
         ctx.fillRect(0, canvas.height - 50, worldWidth, 50);
         ctx.fillStyle = '#3d2413';
@@ -155,7 +197,7 @@ export function initGame(canvasId: string, customSpriteSrc?: string) {
         ctx.lineWidth = 3;
         ctx.strokeRect(chestX, canvas.height - 90, 40, 40);
 
-        // Отрисовка персонажа
+        // Персонаж
         if (spriteSheet.complete && spriteSheet.naturalWidth > 0) {
             const frameWidth = spriteSheet.naturalWidth / spriteData.columns;
             const frameHeight = spriteSheet.naturalHeight / spriteData.rows;
@@ -164,8 +206,10 @@ export function initGame(canvasId: string, customSpriteSrc?: string) {
                 spriteSheet,
                 player.currentFrame * frameWidth,
                 player.currentRow * frameHeight,
-                frameWidth, frameHeight,
-                player.x, player.y,
+                frameWidth,
+                frameHeight,
+                player.x,
+                player.y,
                 frameWidth * player.scale,
                 frameHeight * player.scale
             );
@@ -174,15 +218,16 @@ export function initGame(canvasId: string, customSpriteSrc?: string) {
         ctx.restore();
     }
 
-    function gameLoop() {
+    function gameLoop(): void {
         update();
         draw();
         requestAnimationFrame(gameLoop);
     }
 
+    spriteSheet.onload = () => {
+        requestAnimationFrame(gameLoop);
+    };
     if (spriteSheet.complete) {
         requestAnimationFrame(gameLoop);
-    } else {
-        spriteSheet.onload = () => requestAnimationFrame(gameLoop);
     }
 }
