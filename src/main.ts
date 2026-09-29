@@ -7,8 +7,7 @@ import { FlowStep } from './types';
 import './modules/flow.css';
 import './modules/game.css';
 import data from './data.json';
-// Импортируем initGame из модуля игры (путь скорректируй под структуру своего проекта)
-import { initGame } from './modules/game';
+import { initGame } from './modules/game'; // Импортируем функцию игры
 
 const secretCode = data.vault.secretCode as [number, number, number, number];
 
@@ -83,16 +82,13 @@ new VaultModule(secretCode, () => {
                         </div>
                     </div>
                 `;
-
-                // 5. После отрисовки DOM скрипт из твоих модулей подхватит элементы по ID, 
-                // а инициализация игры запустится по клику на startBtn.
             });
         }
     });
 });
 
 // Финальный экран с наградой
-function showFinal`ard(container: HTMLElement | null) {
+function showFinalReward(container: HTMLElement | null) {
     if (!container) return;
     container.innerHTML = `
         <div style="text-align: center; padding: 30px; display: flex; flex-direction: column; align-items: center; font-size: 20px;">
