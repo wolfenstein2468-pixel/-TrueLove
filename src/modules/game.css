@@ -1,4 +1,5 @@
-* {
+/* Стили только для игрового контейнера и его дочерних элементов */
+.game-container-scope {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -6,28 +7,7 @@
     -webkit-user-select: none;
 }
 
-body {
-    background: #1a1a1a;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    color: white;
-    font-family: sans-serif;
-    overflow: hidden;
-}
-
-.game-container {
-    width: 100%;
-    max-width: 380px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-}
-
-/* Экран выбора скинов */
+/* Экран выбора скинов изначально скрыт */
 .select-screen {
     position: absolute;
     top: 0;
@@ -35,7 +15,7 @@ body {
     width: 100%;
     height: 100%;
     background: #1a1a1a;
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -44,8 +24,12 @@ body {
     text-align: center;
 }
 
+.select-screen.active {
+    display: flex;
+}
+
 .select-screen.hidden {
-    display: none;
+    display: none !important;
 }
 
 .select-title {
@@ -128,14 +112,14 @@ body {
 }
 
 /* Игровой интерфейс */
-.game-ui {
+.game-ui-container {
     width: 100%;
     display: none;
     flex-direction: column;
     align-items: center;
 }
 
-.game-ui.active {
+.game-ui-container.active {
     display: flex;
 }
 
@@ -241,14 +225,6 @@ canvas {
     flex-direction: column;
 }
 
-.dialog-speaker {
-    font-size: 0.75rem;
-    color: #ffd700;
-    font-weight: bold;
-    margin-bottom: 4px;
-    text-transform: uppercase;
-}
-
 .dialog-text {
     font-size: 0.82rem;
     line-height: 1.2;
@@ -308,7 +284,7 @@ canvas {
     cursor: pointer;
 }
 
-.controls {
+.controls-row {
     display: flex;
     justify-content: space-between;
     width: 100%;
