@@ -6,7 +6,6 @@ import { GameStorage } from './modules/storage';
 import { FlowStep } from './types';
 import './modules/flow.css';
 import data from './data.json';
-// ВНИМАНИЕ: game.css больше не импортируем здесь! Он подгрузится внутри game.ts асинхронно.
 
 const secretCode = data.vault.secretCode as [number, number, number, number];
 
@@ -18,6 +17,9 @@ new VaultModule(secretCode, () => {
     const app = document.getElementById('app');
     if (app) app.innerHTML = '';
 
+    // СЕЙФ ОТКРЫТ! Сразу убираем размытый фон сейфа, так как мы идем дальше
+    document.body.classList.remove('intro-stage');
+
     if (GameStorage.isCompleted()) {
         showFinalReward(app);
         return;
@@ -25,8 +27,6 @@ new VaultModule(secretCode, () => {
 
     // 3. Запускаем модуль письма/видео
     new IntroModule(() => {
-        document.body.classList.remove('intro-stage');
-
         // 4. Запускаем квиз
         if (app) {
             app.innerHTML = '';
@@ -41,7 +41,7 @@ new VaultModule(secretCode, () => {
                 gameWrapper.className = 'game-module-wrapper';
                 app.appendChild(gameWrapper);
 
-                // Асинхронно подгружаем и запускаем модуль игры (Vite сделает это отдельным чанком)
+                // Асинхронно подгружаем и запускаем модуль игры
                 const gameModule = await import('./modules/game');
                 gameModule.initGame(gameWrapper);
             });
