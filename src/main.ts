@@ -17,9 +17,10 @@ new VaultModule(secretCode, () => {
     const app = document.getElementById('app');
     if (app) app.innerHTML = '';
 
-    // СЕЙФ ОТКРЫТ! Сразу убираем размытый фон сейфа, так как мы идем дальше
+    // СЕЙФ ОТКРЫТ! Сразу убираем размытый фон сейфа
     document.body.classList.remove('intro-stage');
 
+    // Проверяем прохождение через правильный метод isCompleted()
     if (GameStorage.isCompleted()) {
         showFinalReward(app);
         return;
