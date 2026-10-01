@@ -104,10 +104,11 @@ function startMainGameLoop(container: HTMLElement) {
 
     // Симуляция победы для теста (или привязывай свои обработчики нажатий/прогресса)
     // Например, по клику на финальную награду:
-    finalRewardBtn?.addEventListener('click', () => {
-        GameStorage.setCompleted(true); // Сохраняем статус прохождения
+        finalRewardBtn?.addEventListener('click', () => {
+        GameStorage.saveComplete(); // Правильный метод из storage.ts
         showFinalRewardScreen(container);
     });
+    
 }
 
 // Экран финальной награды внутри модуля игры
