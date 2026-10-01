@@ -1,4 +1,4 @@
-import './styles.css';
+
 import { GameStorage } from './modules/storage';
 
 // Функция отображения финальной награды (если игра уже пройдена)
