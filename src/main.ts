@@ -1,56 +1,7 @@
 import './styles.css';
-import { VaultModule } from './modules/vault';
-import { IntroModule } from './modules/intro';
-import { FlowModule } from './modules/flow';
 import { GameStorage } from './modules/storage';
-import { FlowStep } from './types';
-import './modules/flow.css';
-import data from './data.json';
 
-const secretCode = data.vault.secretCode as [number, number, number, number];
-
-// 1. При старте включаем фоновый стиль для сейфа
-document.body.classList.add('intro-stage');
-
-// 2. Запускаем сейф
-new VaultModule(secretCode, () => {
-    const app = document.getElementById('app');
-    if (app) app.innerHTML = '';
-
-    // СЕЙФ ОТКРЫТ! Сразу убираем размытый фон сейфа
-    document.body.classList.remove('intro-stage');
-
-    // Проверяем прохождение через правильный метод isCompleted()
-    if (GameStorage.isCompleted()) {
-        showFinalReward(app);
-        return;
-    }
-
-    // 3. Запускаем модуль письма/видео
-    new IntroModule(() => {
-        // 4. Запускаем квиз
-        if (app) {
-            app.innerHTML = '';
-            const storySteps: FlowStep[] = data.flowSteps as FlowStep[];
-
-            new FlowModule(app, storySteps, async () => {
-                // Квиз закончен! Очищаем экран под игру
-                app.innerHTML = '';
-
-                // Создаем обертку для игры, чтобы изолировать стили
-                const gameWrapper = document.createElement('div');
-                gameWrapper.className = 'game-module-wrapper';
-                app.appendChild(gameWrapper);
-
-                // Асинхронно подгружаем и запускаем модуль игры
-                const gameModule = await import('./modules/game');
-                gameModule.initGame(gameWrapper);
-            });
-        }
-    });
-});
-
-// Финальный экран с наградой (если уже всё пройдено ранее)
+// Функция отображения финальной награды (если игра уже пройдена)
 function showFinalReward(container: HTMLElement | null) {
     if (!container) return;
     container.innerHTML = `
@@ -59,3 +10,32 @@ function showFinalReward(container: HTMLElement | null) {
         </div>
     `;
 }
+
+// Стартовая точка приложения для теста игры
+async function initTest() {
+    const app = document.getElementById('app');
+    if (!app) return;
+    
+    app.innerHTML = '';
+
+    // Убираем фоновый класс интро/сейфа, если он остался
+    document.body.classList.remove('intro-stage');
+
+    // Проверка статуса прохождения (опционально для теста)
+    if (GameStorage.isCompleted()) {
+        showFinalReward(app);
+        return;
+    }
+
+    // Создаем обертку для игры
+    const gameWrapper = document.createElement('div');
+    gameWrapper.className = 'game-module-wrapper';
+    app.appendChild(gameWrapper);
+
+    // Асинхронно подгружаем и запускаем модуль игры
+    const gameModule = await import('./modules/game');
+    gameModule.initGame(gameWrapper);
+}
+
+// Запускаем тест сразу при загрузке страницы
+initTest();
