@@ -1,4 +1,3 @@
-import './game.css'; // Стили игры теперь грузятся прямо здесь
 import { GameStorage } from './storage';
 
 export async function initGame(container: HTMLElement) {
