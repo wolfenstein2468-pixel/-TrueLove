@@ -429,5 +429,4 @@ function showFinalRewardScreen(container: HTMLElement) {
             </div>
         </div>
     `;
-            }
-        
+}
