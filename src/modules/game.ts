@@ -1,4 +1,4 @@
-import { GameStorage } from './storage';
+
 
 export async function initGame(container: HTMLElement) {
     // 1. Внедряем CSS-стили прямо из TypeScript для удобного теста
