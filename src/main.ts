@@ -1,5 +1,4 @@
 
-import { GameStorage } from './modules/storage';
 
 // Функция отображения финальной награды (если игра уже пройдена)
 function showFinalReward(container: HTMLElement | null) {
